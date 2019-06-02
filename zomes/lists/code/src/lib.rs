@@ -9,8 +9,11 @@ extern crate holochain_core_types_derive;
 use serde_json::value::Value;
 
 //use serde_json::{Result, Value};
+
+
 use hdk::{
     error::ZomeApiResult,
+    error::ZomeApiError,
     holochain_core_types::{
         hash::HashString,
         error::HolochainError,
@@ -18,6 +21,7 @@ use hdk::{
         json::JsonString,
         cas::content::Address,
         entry::Entry,
+        
     }
 };
 
@@ -87,7 +91,7 @@ struct List {
     name: String
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, DefaultJson)]
+#[derive(Serialize, Deserialize, Debug, Clone, DefaultJson,PartialEq)]
 struct ListItem {
     entityType: String,
     item: JsonString
@@ -143,31 +147,30 @@ fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> 
     // try and load the list items, filter out errors and collect in a vector
     let list_items = hdk::get_links(&list_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
         .iter()
-        .map(|item_address| {
-            
+        .map(|item_address| {            
             hdk::utils::get_as_type::<ListItem>(item_address.to_owned())
         })
-        
-    /*    .map(|item:ListItem| {
-            match searchSomething(search, item){
-            _ =>false,
-
-        }})*/
-        .filter_map(Result::ok)
+        .filter_map(Result::ok)         
         .collect::<Vec<ListItem>>();
+
+        let curated_list: Vec<ListItem> = list_items.into_iter()
+        .filter(|item| {         
+            //searchSomething(search, item)
+            true        
+        })
+        .collect();
 
    
    
     // if this was successful then return the list items
     Ok(GetListResponse{
         name: list.name,
-        items: list_items
+        items: curated_list
     })
 
 }
-/*
-fn searchSomething(search:SearchObject,item:ListItem)->ZomeApiResult<bool> {
-println!("{}",&search.item);
+
+fn searchSomething(_search:JsonString,_item:ListItem)->Result<bool,ZomeApiError> {
 //let s: SearchObject = SearchObject::try_from(&search.item.to_string())?;
 //let e: SearchObject = GetSearchResponse::try_from(&item.item.to_string())?;
 
@@ -179,4 +182,4 @@ println!("{}",&search.item);
    
     Ok(true)
 }
-*/
+
