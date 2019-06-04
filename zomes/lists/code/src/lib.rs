@@ -4,11 +4,10 @@ extern crate hdk;
 #[macro_use]
 extern crate serde_derive;
 
+
+
 #[macro_use]
 extern crate holochain_core_types_derive;
-use serde_json::value::Value;
-
-//use serde_json::{Result, Value};
 
 
 use hdk::{
@@ -24,6 +23,9 @@ use hdk::{
         
     }
 };
+
+
+use serde_json::value::Value;
 
 
  
@@ -132,7 +134,7 @@ fn handle_add_item(list_item: ListItem, list_addr: HashString) -> ZomeApiResult<
         list_item.into()
     );
     
-    
+    hdk::debug("*********************************");
 	let item_addr = hdk::commit_entry(&list_item_entry)?; // commit the list item
 	hdk::link_entries(&list_addr, &item_addr, "items",&clone_item.entityType)?; // if successful, link to list address
 	Ok(item_addr)
@@ -150,19 +152,15 @@ fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> 
         .map(|item_address| {            
             hdk::utils::get_as_type::<ListItem>(item_address.to_owned())
         })
-        .filter_map(Result::ok)         
+        .filter_map(Result::ok)    
         .collect::<Vec<ListItem>>();
 
-        let curated_list: Vec<ListItem> = list_items.into_iter()
-        .filter(|item| {         
-            //searchSomething(search, item)
-            true        
-        })
-        .collect();
-
-   
-   
-    // if this was successful then return the list items
+    // filter the results
+        let curated_list: Vec<ListItem> = 
+        list_items.into_iter()
+        .filter(|item| searchSomething(search.clone(), item))
+        .collect(); 
+    //  then return the list items
     Ok(GetListResponse{
         name: list.name,
         items: curated_list
@@ -170,16 +168,28 @@ fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> 
 
 }
 
-fn searchSomething(_search:JsonString,_item:ListItem)->Result<bool,ZomeApiError> {
-//let s: SearchObject = SearchObject::try_from(&search.item.to_string())?;
-//let e: SearchObject = GetSearchResponse::try_from(&item.item.to_string())?;
 
-    // Access parts of the data by indexing with square brackets.
-   // println!("Please call {} at the number {}", v["name"], v["phones"][0]);    
-     //    if s["id"] != e["id"]{ Ok(GetSearchResponse{found:false}) } 
-       // if search.item.name != item..item.name { false }
+
+fn searchSomething(_search:JsonString,_item:&ListItem)->bool {
+    
+let s:Value= serde_json::from_str(&_search.to_string()).unwrap();
+let e:Value= serde_json::from_str(&_item.item.to_string()).unwrap();
+
+let mut res: bool = true;
+
+   // let fields = s["map"].as_array().unwrap();
+   // for field in fields { 
+    // let index =  field.as_str();     
+    /*  if e[index]!=s[index]  { 
+          res  = false;
+          break;
+      }   */  
+//}
+res
+}
+   
+   
         
    
-    Ok(true)
-}
+
 
