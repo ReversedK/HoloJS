@@ -33,8 +33,8 @@ scenario.runTape('Can create a list', async (t, { alice }) => {
 scenario.runTape('Can get a list with items', async (t, { alice }) => {
   const createResult = await alice.callSync('lists', 'create_list', { list: { name: 'test list' } })
   const listAddr = createResult.Ok
-  let item1 = {id:1,name:"post 1"};
-  let item2 = {id:2,name:"post 2"};
+  let item1 = {entityType: "article",id:1,name:"post 1"};
+  let item2 = {entityType: "article",id:2,name:"post 2"};
   
   let post1 = { map:Object.keys(item1), entityType: "article", item: JSON.stringify(item1) }
   let post2 = { map:Object.keys(item2), entityType: "article", item: JSON.stringify(item2) }

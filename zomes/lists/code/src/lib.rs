@@ -174,53 +174,15 @@ fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> 
 fn searchSomething(_search:JsonString,_item:&ListItem)->bool {
     
 let s:Value= serde_json::from_str(&_search.to_string()).unwrap();
-let e:Value= serde_json::from_str(&_item.item.to_string()).unwrap();
- 
+let e:Value= serde_json::from_str(&_item.item.to_string()).unwrap(); 
 let mut res: bool = true;
-let empty_array:Vec<Value>=[].to_vec();
-    let fields = &_item.map;
-   
-  
-    for field in fields {         
-     let index:String =  field.to_string();
-      if e[&index].to_string()!=s[&index].to_string()  {
-          hdk::debug(e[&index].to_string());
-           hdk::debug(s[&index].to_string());
+ let obj = s.as_object().unwrap();
+//let foo = obj.get("item").unwrap();
+ for (key, value) in obj.iter() {
+        if e[&key].to_string()!=value.to_string()  {
           res  = false;
           break;
      }     
-}
+ }
 res
 }
-
-fn test() {
-    let data: Value = serde_json::from_str("{\"foo\": 13, \"bar\": \"baz\"}").unwrap();
-    println!("data: {:?}", data);
-    // data: {"bar":"baz","foo":13}
-    println!("object? {}", data.is_object());
-    // object? true
-
-    let obj = data.as_object().unwrap();
-    let foo = obj.get("foo").unwrap();
-
-    println!("array? {:?}", foo.as_array());
-    // array? None
-    println!("u64? {:?}", foo.as_u64());
-    // u64? Some(13u64)
-
-    for (key, value) in obj.iter() {
-        println!("{}: {}", key, match *value {
-           
-            Value::String(ref v) => format!("{} (string)", v),
-            _ => format!("other")
-        });
-    }
-    // bar: baz (string)
-    // foo: 13 (u64)
-}
-   
-   
-        
-   
-
-
