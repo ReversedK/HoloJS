@@ -168,13 +168,42 @@ fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> 
 }
 
 
-fn evaluateIsOperator(searchval:Value,e:Value)->bool{
+fn evaluateIsOperator(operator:String,searchval:Value,e:Value)->bool{
+    
+    if &operator=="is" {
     if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()==searchval.as_u64() }
     else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()==searchval.as_i64() }
     else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()==searchval.as_f64() }
     else if searchval.is_string() { hdk::debug("is string----------------");e.as_str()==searchval.as_str() }
-     
     else {false}
+    }   else if &operator=="is_not" {
+    if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()!=searchval.as_u64() }
+    else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()!=searchval.as_i64() }
+    else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()!=searchval.as_f64() }
+    else if searchval.is_string() { hdk::debug("is string----------------");e.as_str()!=searchval.as_str() }
+    else {false}
+    } else if &operator=="is_less_than"{
+    if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()<searchval.as_u64() }
+    else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()<searchval.as_i64() }
+    else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()<searchval.as_f64() }
+    else {false}
+    } else if &operator=="is_more_than"{
+    if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()>searchval.as_u64() }
+    else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()>searchval.as_i64() }
+    else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()>searchval.as_f64() }
+    else {false}
+    }else if &operator=="more_or_equal_than"{
+    if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()>=searchval.as_u64() }
+    else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()>=searchval.as_i64() }
+    else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()>=searchval.as_f64() }
+    else {false}
+    } else if &operator=="less_or_equal_than"{
+    if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()<=searchval.as_u64() }
+    else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()<=searchval.as_i64() }
+    else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()<=searchval.as_f64() }
+    else {false}
+    } else {false}
+
       /*  searchval.is_f64()=>Ok(e[&key].as_f64()==value2.as_f64()), 
         searchval.is_i64()=>Ok(e[&key].as_i64()==value2.as_i64()), 
         _ => ,Ok(e.as_str()==v.as_str())*/
@@ -194,11 +223,16 @@ let mut res: bool = true;
  for (key, search_object_json) in search_obj.iter() {     
       let search_object = search_object_json.as_object().unwrap();
       for (key2, searchvalue) in search_object.iter() {
+      // not an array of condition, just one
       let estimation: Result<bool,String> = match key2.as_str() {        
        "contains" => Ok(e[&key].as_str().unwrap().contains(searchvalue.as_str().unwrap())),
-       "is" => Ok(evaluateIsOperator(searchvalue.clone(), e[&key].clone())),  
+      "does_not_contain" => Ok(!e[&key].as_str().unwrap().contains(searchvalue.as_str().unwrap())),
+       
+       "is" | "is_more_than" | "is_less_than" | "is_not" | "more_or_equal_than" | "less_or_equal_than" => Ok(evaluateIsOperator(key2.to_string(),searchvalue.clone(), e[&key].clone())),  
        _ => Err("error".to_string())
         };
+
+
         if estimation.is_ok() {
             if estimation.clone().ok().unwrap()==false {
                 hdk::debug(key.to_string());

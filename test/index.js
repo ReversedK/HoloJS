@@ -44,7 +44,7 @@ scenario.runTape('Can get a list with items', async (t, { alice }) => {
   let post3 = {  entityType: "article", item: JSON.stringify(item3) }
   let post4 = {  entityType: "article", item: JSON.stringify(item4) }
   
-let search = {name:{"contains":"Philo","contains":"Holos"},id:{"is":3}};
+let search = {name:{"does_not_contain":"ORM"},id:{"more_or_equal_than":1}};
 
   const result1 = await alice.callSync('lists', 'add_item', { list_item: post1, list_addr: listAddr })
   const result2 = await alice.callSync('lists', 'add_item', { list_item: post2, list_addr: listAddr })
