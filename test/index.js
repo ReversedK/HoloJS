@@ -4,7 +4,11 @@ const dnaPath = 'dist/orm.dna.json'
 const dna = Config.dna(dnaPath, 'happs')
 const agentAlice = Config.agent('alice')
 const instanceAlice = Config.instance(agentAlice, dna)
-const scenario = new Scenario([instanceAlice])
+
+
+const scenario = new Scenario([instanceAlice],{ debugLog:true })
+
+
 /*
 scenario.runTape('Can create a list', async (t, { alice }) => {
   const createResult = await alice.callSync('lists', 'create_list', { list: { name: 'test list' } })
