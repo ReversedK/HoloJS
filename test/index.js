@@ -33,18 +33,27 @@ scenario.runTape('Can create a list', async (t, { alice }) => {
 scenario.runTape('Can get a list with items', async (t, { alice }) => {
   const createResult = await alice.callSync('lists', 'create_list', { list: { name: 'test list' } })
   const listAddr = createResult.Ok
-  let item1 = {entityType: "article",id:1,name:"post 1"};
-  let item2 = {entityType: "article",id:2,name:"post 2"};
+  let item1 = {entityType: "article",id:1,name:"Holo ORM"};
+  let item2 = {entityType: "article",id:2,name:"Holo CMS"};
+  let item3 = {entityType: "article",id:3,name:"Holo Philo"};
+  let item4 = {entityType: "article",id:4,name:"I love Holo"};
   
   let post1 = {  entityType: "article", item: JSON.stringify(item1) }
   let post2 = {  entityType: "article", item: JSON.stringify(item2) }
+    
+  let post3 = {  entityType: "article", item: JSON.stringify(item3) }
+  let post4 = {  entityType: "article", item: JSON.stringify(item4) }
   
+let search = {name:{"contains":"Philo","contains":"Holos"},id:{"is":3}};
+
   const result1 = await alice.callSync('lists', 'add_item', { list_item: post1, list_addr: listAddr })
   const result2 = await alice.callSync('lists', 'add_item', { list_item: post2, list_addr: listAddr })
+  const result3 = await alice.callSync('lists', 'add_item', { list_item: post3, list_addr: listAddr })
+  const result4 = await alice.callSync('lists', 'add_item', { list_item: post4, list_addr: listAddr })
 
 
   const getResult = await alice.callSync('lists', 'get_list', { list_addr: listAddr, link_tag : "article"
-  ,search: JSON.stringify({entityType:"article",id:1})
+  ,search: JSON.stringify(search)
  })
   console.log(getResult.Ok.items[0])
 

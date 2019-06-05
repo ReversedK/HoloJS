@@ -24,6 +24,7 @@ use hdk::{
 };
 
 
+use serde_json;
 use serde_json::value::Value;
 
 
@@ -167,18 +168,44 @@ fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> 
 }
 
 
+fn evaluateIsOperator(searchval:Value,e:Value)->bool{
+    if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()==searchval.as_u64() }
+    else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()==searchval.as_i64() }
+    else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()==searchval.as_f64() }
+    else if searchval.is_string() { hdk::debug("is string----------------");e.as_str()==searchval.as_str() }
+     
+    else {false}
+      /*  searchval.is_f64()=>Ok(e[&key].as_f64()==value2.as_f64()), 
+        searchval.is_i64()=>Ok(e[&key].as_i64()==value2.as_i64()), 
+        _ => ,Ok(e.as_str()==v.as_str())*/
+    
+}
+
+//TODO : operateurs < et > 
+//TODO : recherche AND ou OR
+//TODO: recherche dans chaine 
 
 fn search_something(_search:JsonString,_item:&ListItem)->bool {    
 let s:Value= serde_json::from_str(&_search.to_string()).unwrap();
 let e:Value= serde_json::from_str(&_item.item.to_string()).unwrap(); 
 let mut res: bool = true;
- let obj = s.as_object().unwrap();
+ let search_obj = s.as_object().unwrap();
 //let foo = obj.get("item").unwrap();
- for (key, value) in obj.iter() {
-        if e[&key].to_string()!=value.to_string()  {
-          res  = false;
-          break;
-     }     
+ for (key, search_object_json) in search_obj.iter() {     
+      let search_object = search_object_json.as_object().unwrap();
+      for (key2, searchvalue) in search_object.iter() {
+      let estimation: Result<bool,String> = match key2.as_str() {        
+       "contains" => Ok(e[&key].as_str().unwrap().contains(searchvalue.as_str().unwrap())),
+       "is" => Ok(evaluateIsOperator(searchvalue.clone(), e[&key].clone())),  
+       _ => Err("error".to_string())
+        };
+        if estimation.is_ok() {
+            if estimation.clone().ok().unwrap()==false {
+                hdk::debug(key.to_string());
+                res=estimation.ok().unwrap(); 
+            }
+        }
+      }
  }
 res
 }
