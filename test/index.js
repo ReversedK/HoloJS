@@ -36,8 +36,8 @@ scenario.runTape('Can get a list with items', async (t, { alice }) => {
   let item1 = {entityType: "article",id:1,name:"post 1"};
   let item2 = {entityType: "article",id:2,name:"post 2"};
   
-  let post1 = { map:Object.keys(item1), entityType: "article", item: JSON.stringify(item1) }
-  let post2 = { map:Object.keys(item2), entityType: "article", item: JSON.stringify(item2) }
+  let post1 = {  entityType: "article", item: JSON.stringify(item1) }
+  let post2 = {  entityType: "article", item: JSON.stringify(item2) }
   
   const result1 = await alice.callSync('lists', 'add_item', { list_item: post1, list_addr: listAddr })
   const result2 = await alice.callSync('lists', 'add_item', { list_item: post2, list_addr: listAddr })
