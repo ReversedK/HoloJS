@@ -167,6 +167,9 @@ fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> 
 
 }
 
+/******************************************** */
+/************     Fn         ***************** */
+/******************************************** */
 
 fn evaluateIsOperator(operator:String,searchval:Value,e:Value)->bool{
     
@@ -210,36 +213,33 @@ fn evaluateIsOperator(operator:String,searchval:Value,e:Value)->bool{
     
 }
 
-//TODO : operateurs < et > 
-//TODO : recherche AND ou OR
-//TODO: recherche dans chaine 
+//TODO : arrays de conditions
+// TODO : recherche AND / OR 
+// TODO  operateur regexp
 
 fn search_something(_search:JsonString,_item:&ListItem)->bool {    
-let s:Value= serde_json::from_str(&_search.to_string()).unwrap();
-let e:Value= serde_json::from_str(&_item.item.to_string()).unwrap(); 
-let mut res: bool = true;
- let search_obj = s.as_object().unwrap();
-//let foo = obj.get("item").unwrap();
- for (key, search_object_json) in search_obj.iter() {     
-      let search_object = search_object_json.as_object().unwrap();
-      for (key2, searchvalue) in search_object.iter() {
-      // not an array of condition, just one
-      let estimation: Result<bool,String> = match key2.as_str() {        
-       "contains" => Ok(e[&key].as_str().unwrap().contains(searchvalue.as_str().unwrap())),
-      "does_not_contain" => Ok(!e[&key].as_str().unwrap().contains(searchvalue.as_str().unwrap())),
-       
-       "is" | "is_more_than" | "is_less_than" | "is_not" | "more_or_equal_than" | "less_or_equal_than" => Ok(evaluateIsOperator(key2.to_string(),searchvalue.clone(), e[&key].clone())),  
-       _ => Err("error".to_string())
-        };
-
-
-        if estimation.is_ok() {
-            if estimation.clone().ok().unwrap()==false {
-                hdk::debug(key.to_string());
-                res=estimation.ok().unwrap(); 
+    let s:Value= serde_json::from_str(&_search.to_string()).unwrap();
+    let e:Value= serde_json::from_str(&_item.item.to_string()).unwrap(); 
+    let mut res: bool = true;
+    let search_obj = s.as_object().unwrap();
+    //let foo = obj.get("item").unwrap();
+    for (key, search_object_json) in search_obj.iter() {     
+        let search_object = search_object_json.as_object().unwrap();
+        for (key2, searchvalue) in search_object.iter() {
+        // not an array of condition, just one
+        let estimation: Result<bool,String> = match key2.as_str() {        
+        "contains" => Ok(e[&key].as_str().unwrap().contains(searchvalue.as_str().unwrap())),
+        "does_not_contain" => Ok(!e[&key].as_str().unwrap().contains(searchvalue.as_str().unwrap())),       
+        "is" | "is_more_than" | "is_less_than" | "is_not" | "more_or_equal_than" | "less_or_equal_than" => Ok(evaluateIsOperator(key2.to_string(),searchvalue.clone(), e[&key].clone())),  
+        _ => Err("error".to_string())
+            };
+            if estimation.is_ok() {
+                if estimation.clone().ok().unwrap()==false {  // this is an AND query : if anything is false, it's a no
+                    hdk::debug(key.to_string());
+                    res=estimation.ok().unwrap(); 
+                }
             }
         }
-      }
- }
-res
+    }
+    res
 }
