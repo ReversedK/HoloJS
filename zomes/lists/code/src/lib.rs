@@ -57,7 +57,17 @@ define_zome! {
             validation_package: || hdk::ValidationPackageDefinition::Entry,
             validation: |validation_data: hdk::EntryValidationData<ListItem>| {
                 Ok(())
-            }
+            }, 
+            links: [
+                to!(
+                    "listItem",
+                    link_type: "items",
+                    validation_package: || hdk::ValidationPackageDefinition::Entry,
+                    validation: |_validation_data: hdk::LinkValidationData| {
+                        Ok(())
+                    }
+                )
+            ]
         )
     ]
  
@@ -83,7 +93,7 @@ define_zome! {
         }
         link_items: {
             inputs: |item_address: HashString,linkto_address: HashString, link_tag: String|,
-            outputs: |result: ZomeApiResult<bool>|,
+            outputs: |result: ZomeApiResult<Address>|,
             handler: handle_link_items
         }
         unlink_items: {
@@ -102,13 +112,13 @@ define_zome! {
             handler: handle_delete_item
         }       
         link_bidir: {
-            inputs: |item_address: HashString,second_item_address: HashString, link_tag_ab: String,link_tag_ba: String|,
+            inputs: |item_a: HashString,item_b: HashString, link_tag_ab: String,link_tag_ba: String|,
             outputs: |result: ZomeApiResult<bool>|,
             handler: handle_link_bidir
         }
     ]
     traits: {
-        hc_public [create_list, add_item, get_list]
+        hc_public [create_list, add_item, get_list,link_bidir,delete_item,update_item,unlink_items,link_items]
     }
 }
      
@@ -143,14 +153,14 @@ struct GetListResponse {
 /************     Handlers   ***************** */
 /******************************************** */
 
-fn handle_link_bidir(item_address: Address, second_item_address: Address,link_tag_ab:String,link_tag_ba:String) -> ZomeApiResult<bool> {
-        hdk::utils::link_entries_bidir(&item_address, &second_item_address, "items", &link_tag_ab,"items", &link_tag_ba)?;
+fn handle_link_bidir(item_a: Address, item_b: Address,link_tag_ab:String,link_tag_ba:String) -> ZomeApiResult<bool> {
+        hdk::utils::link_entries_bidir(&item_a, &item_b, "items","items", &link_tag_ab, &link_tag_ba)?;
         Ok(true)
 }
 
-fn handle_link_items(item_address:Address,linkto_address:Address,link_tag:String)->ZomeApiResult<bool>{
-    hdk::link_entries(&linkto_address, &item_address, "items",&link_tag)?; // if successful, link to list address
-	Ok(true)
+fn handle_link_items(item_address:HashString,linkto_address:HashString,link_tag:String)->ZomeApiResult<Address>{
+    let addr = hdk::api::link_entries( &item_address,&linkto_address, "items",&link_tag)?;
+	Ok(addr)
 }
 
 fn handle_delete_item(item_address: Address) -> ZomeApiResult<bool> {
@@ -199,8 +209,8 @@ fn handle_add_item(list_item: ListItem, list_addr: HashString) -> ZomeApiResult<
 fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetListResponse> {
 
     // load the list entry. Early return error if it cannot load or is wrong type
-    let list = hdk::utils::get_as_type::<List>(list_addr.clone())?;
-
+    let list = hdk::utils::get_as_type::<List>(list_addr.clone()).or(|x| hdk::utils::get_as_type::<ListItem>(list_addr.clone()))?;
+    
     // try and load the list items, filter out errors and collect in a vector
     let list_items = hdk::get_links(&list_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
         .iter()
@@ -217,7 +227,7 @@ fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> 
         .collect(); 
     //  then return the list items
     Ok(GetListResponse{
-        name: list.name,
+        name: "list.name".to_string(),
         items: curated_list
     })
 
