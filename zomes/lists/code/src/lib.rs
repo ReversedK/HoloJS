@@ -92,7 +92,7 @@ define_zome! {
             handler: handle_get_list
         }
         get_linked_items: {
-            inputs: |list_addr: HashString, link_tag: String,search: JsonString|,
+            inputs: |item_addr: HashString, link_tag: String,search: JsonString|,
             outputs: |result: ZomeApiResult<GetListResponse>|,
             handler: handle_get_linked_items
         }
@@ -236,11 +236,11 @@ fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> 
     })
 }
 
-fn handle_get_linked_items(list_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetListResponse> {
+fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetListResponse> {
     // load the list entry. Early return error if it cannot load or is wrong type
-    let list = hdk::utils::get_as_type::<ListItem>(list_addr.clone())?;   
+    let list = hdk::utils::get_as_type::<ListItem>(item_addr.clone())?;   
     // try and load the list items, filter out errors and collect in a vector
-    let list_items = hdk::get_links(&list_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
+    let list_items = hdk::get_links(&item_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
         .iter()
         .map(|item_address| {            
             hdk::utils::get_as_type::<ListItem>(item_address.to_owned())
