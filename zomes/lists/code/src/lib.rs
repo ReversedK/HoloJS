@@ -9,7 +9,7 @@ extern crate serde_derive;
 #[macro_use]
 extern crate holochain_core_types_derive;
 
-
+use hdk::utils;
 use hdk::{
     error::ZomeApiResult,
     holochain_core_types::{
@@ -111,9 +111,39 @@ struct GetListResponse {
     items: Vec<ListItem>
 }
 
+// links
+fn handle_bidir_link(item_address: Address, second_item_address: Address,link_tag:String) -> ZomeApiResult<()> {
+        hdk::utils::link_entries_bidir(&item_address, &second_item_address, "items", &link_tag,"items", &link_tag)?;
+        Ok(())
+}
 
+fn handle_link_items(item_address:Address,linkto_address:Address,link_tag:String)->ZomeApiResult<Address>{
+    hdk::link_entries(&linkto_address, &item_address, "items",&link_tag)?; // if successful, link to list address
+	Ok(item_address)
+}
 
+fn handle_unlink_items(item_address:Address,linkto_address:Address,link_tag:String)->ZomeApiResult<Address>{
+    hdk::link_entries(&linkto_address, &item_address, "items",&link_tag)?; // if successful, link to list address
+	Ok(item_address)
+}
 
+/// Delete a post
+fn handle_delete_item(address: Address) -> ZomeApiResult<Address> {
+    hdk::remove_entry(&address)
+}
+
+fn handle_unlink(target:Address,base_item:Address,link_tag:String)-> ZomeApiResult<bool>{
+  hdk::remove_link(&base_item,&target,"items",&link_tag)?;
+  Ok(true)
+}
+
+fn  handle_update_item(new_entry: ListItem, address: &Address) -> ZomeApiResult<Address> {
+      let new_entry: ListItem = new_entry.into();
+     hdk::update_entry(
+        Entry::App("listItem".into(),new_entry.into()),
+        &address.clone()
+    )
+}
 fn handle_create_list(list: List) -> ZomeApiResult<Address> {
     // define the entry
     let list_entry = Entry::App(
@@ -214,7 +244,7 @@ fn evaluateIsOperator(operator:String,searchval:Value,e:Value)->bool{
 }
 
 //TODO : arrays de conditions
-// TODO : recherche AND / OR 
+// TODO : search mode AND / OR 
 // TODO  operateur regexp
 
 fn search_something(_search:JsonString,_item:&ListItem)->bool {    
