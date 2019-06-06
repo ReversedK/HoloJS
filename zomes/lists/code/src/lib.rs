@@ -106,7 +106,6 @@ define_zome! {
             outputs: |result: ZomeApiResult<bool>|,
             handler: handle_link_bidir
         }
-
     ]
     traits: {
         hc_public [create_list, add_item, get_list]
@@ -155,7 +154,7 @@ fn handle_link_items(item_address:Address,linkto_address:Address,link_tag:String
 }
 
 fn handle_delete_item(item_address: Address) -> ZomeApiResult<bool> {
-    hdk::remove_entry(&item_address)?
+    hdk::remove_entry(&item_address)?;
     Ok(true)
 }
 
@@ -164,7 +163,7 @@ fn handle_unlink_items(target:Address,base_item:Address,link_tag:String)-> ZomeA
   Ok(true)
 }
 
-fn  handle_update_item(new_entry: ListItem, address: &Address) -> ZomeApiResult<Address> {
+fn  handle_update_item(new_entry: ListItem, address: Address) -> ZomeApiResult<Address> {
       let new_entry: ListItem = new_entry.into();
      hdk::update_entry(
         Entry::App("listItem".into(),new_entry.into()),
