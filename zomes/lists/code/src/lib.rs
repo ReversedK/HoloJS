@@ -81,12 +81,38 @@ define_zome! {
             outputs: |result: ZomeApiResult<GetListResponse>|,
             handler: handle_get_list
         }
+        link_items: {
+            inputs: |item_address: HashString,linkto_address: HashString, link_tag: String|,
+            outputs: |result: ZomeApiResult<bool>|,
+            handler: handle_link_items
+        }
+        unlink_items: {
+            inputs: |target: HashString,base_item: HashString, link_tag: String|,
+            outputs: |result: ZomeApiResult<bool>|,
+            handler: handle_unlink_items
+        }
+        update_item: {
+            inputs: |new_entry: ListItem,item_address: HashString|,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: handle_update_item
+        }
+        delete_item: {
+            inputs: |item_address: HashString|,
+            outputs: |result: ZomeApiResult<bool>|,
+            handler: handle_delete_item
+        }       
+        link_bidir: {
+            inputs: |item_address: HashString,second_item_address: HashString, link_tag_ab: String,link_tag_ba: String|,
+            outputs: |result: ZomeApiResult<bool>|,
+            handler: handle_link_bidir
+        }
+
     ]
     traits: {
         hc_public [create_list, add_item, get_list]
     }
 }
-
+     
 
 #[derive(Serialize, Deserialize, Debug, Clone, DefaultJson)]
 struct List {
@@ -111,28 +137,29 @@ struct GetListResponse {
     items: Vec<ListItem>
 }
 
-// links
-fn handle_bidir_link(item_address: Address, second_item_address: Address,link_tag:String) -> ZomeApiResult<()> {
-        hdk::utils::link_entries_bidir(&item_address, &second_item_address, "items", &link_tag,"items", &link_tag)?;
-        Ok(())
+
+
+
+/******************************************** */
+/************     Handlers   ***************** */
+/******************************************** */
+
+fn handle_link_bidir(item_address: Address, second_item_address: Address,link_tag_ab:String,link_tag_ba:String) -> ZomeApiResult<bool> {
+        hdk::utils::link_entries_bidir(&item_address, &second_item_address, "items", &link_tag_ab,"items", &link_tag_ba)?;
+        Ok(true)
 }
 
-fn handle_link_items(item_address:Address,linkto_address:Address,link_tag:String)->ZomeApiResult<Address>{
+fn handle_link_items(item_address:Address,linkto_address:Address,link_tag:String)->ZomeApiResult<bool>{
     hdk::link_entries(&linkto_address, &item_address, "items",&link_tag)?; // if successful, link to list address
-	Ok(item_address)
+	Ok(true)
 }
 
-fn handle_unlink_items(item_address:Address,linkto_address:Address,link_tag:String)->ZomeApiResult<Address>{
-    hdk::link_entries(&linkto_address, &item_address, "items",&link_tag)?; // if successful, link to list address
-	Ok(item_address)
+fn handle_delete_item(item_address: Address) -> ZomeApiResult<bool> {
+    hdk::remove_entry(&item_address)?
+    Ok(true)
 }
 
-/// Delete a post
-fn handle_delete_item(address: Address) -> ZomeApiResult<Address> {
-    hdk::remove_entry(&address)
-}
-
-fn handle_unlink(target:Address,base_item:Address,link_tag:String)-> ZomeApiResult<bool>{
+fn handle_unlink_items(target:Address,base_item:Address,link_tag:String)-> ZomeApiResult<bool>{
   hdk::remove_link(&base_item,&target,"items",&link_tag)?;
   Ok(true)
 }
