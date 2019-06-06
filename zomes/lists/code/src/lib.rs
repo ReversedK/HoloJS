@@ -91,6 +91,11 @@ define_zome! {
             outputs: |result: ZomeApiResult<GetListResponse>|,
             handler: handle_get_list
         }
+        get_linked_items: {
+            inputs: |list_addr: HashString, link_tag: String,search: JsonString|,
+            outputs: |result: ZomeApiResult<GetListResponse>|,
+            handler: handle_get_linked_items
+        }
         link_items: {
             inputs: |item_address: HashString,linkto_address: HashString, link_tag: String|,
             outputs: |result: ZomeApiResult<Address>|,
@@ -118,7 +123,7 @@ define_zome! {
         }
     ]
     traits: {
-        hc_public [create_list, add_item, get_list,link_bidir,delete_item,update_item,unlink_items,link_items]
+        hc_public [get_linked_items,create_list, add_item, get_list,link_bidir,delete_item,update_item,unlink_items,link_items]
     }
 }
      
@@ -207,10 +212,33 @@ fn handle_add_item(list_item: ListItem, list_addr: HashString) -> ZomeApiResult<
 
 
 fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetListResponse> {
-
     // load the list entry. Early return error if it cannot load or is wrong type
-    let list = hdk::utils::get_as_type::<List>(list_addr.clone()).or(|x| hdk::utils::get_as_type::<ListItem>(list_addr.clone()))?;
-    
+    let list = hdk::utils::get_as_type::<List>(list_addr.clone())?;
+   
+    // try and load the list items, filter out errors and collect in a vector
+    let list_items = hdk::get_links(&list_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
+        .iter()
+        .map(|item_address| {            
+            hdk::utils::get_as_type::<ListItem>(item_address.to_owned())
+        })
+        .filter_map(Result::ok)    
+        .collect::<Vec<ListItem>>();
+
+    // filter the results
+        let curated_list: Vec<ListItem> = 
+        list_items.into_iter()
+        .filter(|item| search_something(search.clone(), item))
+        .collect(); 
+    //  then return the list items
+    Ok(GetListResponse{
+        name: "list.name".to_string(),
+        items: curated_list
+    })
+}
+
+fn handle_get_linked_items(list_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetListResponse> {
+    // load the list entry. Early return error if it cannot load or is wrong type
+    let list = hdk::utils::get_as_type::<ListItem>(list_addr.clone())?;   
     // try and load the list items, filter out errors and collect in a vector
     let list_items = hdk::get_links(&list_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
         .iter()
@@ -236,6 +264,9 @@ fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> 
 /******************************************** */
 /************     Fn         ***************** */
 /******************************************** */
+
+
+
 
 fn evaluateIsOperator(operator:String,searchval:Value,e:Value)->bool{
     

@@ -57,21 +57,21 @@ let search = {name:{"does_not_contain":"ORM"},id:{"more_or_equal_than":1}};
  console.log("addr_tag1",addr_tag1.Ok);
  console.log("addr_tag2",addr_tag2.Ok);
   // post 2 linké avec tag 1 et 2
-  const result1 = await alice.callSync('lists', 'link_items', { item_address: addr_post1.Ok, linkto_address: addr_tag1.Ok,link_tag:"tag1" })
+  const result1 = await alice.callSync('lists', 'link_items', { item_address: addr_post1.Ok, linkto_address: addr_tag1.Ok,link_tag:"tag" })
   console.log("result1:",result1)
-  const result2 = await alice.callSync('lists', 'link_bidir', { item_a: addr_post1.Ok, item_b: addr_tag1.Ok,link_tag_ab:"tag1",link_tag_ba:"tag" })
+  const result2 = await alice.callSync('lists', 'link_bidir', { item_a: addr_post1.Ok, item_b: addr_tag2.Ok,link_tag_ab:"tag",link_tag_ba:"tag" })
   console.log("result2:",result2)
   // post 2 linké avec tag 1
-  const result3 = await alice.callSync('lists', 'link_bidir', { item_a: addr_post2.Ok, item_b: addr_tag1.Ok,link_tag_ab:"tag1",link_tag_ba:"tag" })
+  const result3 = await alice.callSync('lists', 'link_bidir', { item_a: addr_post2.Ok, item_b: addr_tag1.Ok,link_tag_ab:"tag",link_tag_ba:"tag" })
   console.log("result3:",result3)
   // update post 1
   const update = await alice.callSync('lists', 'update_item', { new_entry: post1mod, item_address: addr_post1.Ok })
   console.log("update:",update)
   // searchpost for tag 1
-  const postsForTag1 = await alice.callSync('lists', 'get_references', { list_addr: addr_tag1.Ok, link_tag : "tag" ,search: "{}" });
+  const postsForTag1 = await alice.callSync('lists', 'get_linked_items', { list_addr: addr_tag1.Ok, link_tag : "tag" ,search: "{}" });
   console.log("postsForTag1:",postsForTag1.Ok.items)
   // searchpost for tag 2
-  const postsForTag2 = await alice.callSync('lists', 'get_references', { list_addr: addr_tag2.Ok, link_tag : "tag" ,search: "{}" });
+  const postsForTag2 = await alice.callSync('lists', 'get_linked_items', { list_addr: addr_tag2.Ok, link_tag : "tag" ,search: "{}" });
   console.log("postsForTag2:",postsForTag2.Ok.items)
 // get all the posts 
   const allPosts = await alice.callSync('lists', 'get_list', { list_addr: listAddr, link_tag : "article" ,search: "{}"})
