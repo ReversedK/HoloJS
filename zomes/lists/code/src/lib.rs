@@ -32,16 +32,16 @@ use serde_json::value::Value;
 define_zome! {
     entries: [
         entry!(
-            name: "list",
+            name: "collection",
             description: "",
             sharing: Sharing::Public,
             validation_package: || hdk::ValidationPackageDefinition::Entry,
-            validation: |validation_data: hdk::EntryValidationData<List>| {
+            validation: |validation_data: hdk::EntryValidationData<Collection>| {
                 Ok(())
             },
             links: [
                 to!(
-                    "listItem",
+                    "HoloJsEntry",
                     link_type: "items",
                     validation_package: || hdk::ValidationPackageDefinition::Entry,
                     validation: |_validation_data: hdk::LinkValidationData| {
@@ -51,16 +51,16 @@ define_zome! {
             ]
         ),
         entry!(
-            name: "listItem",
+            name: "HoloJsEntry",
             description: "",
             sharing: Sharing::Public,
             validation_package: || hdk::ValidationPackageDefinition::Entry,
-            validation: |validation_data: hdk::EntryValidationData<ListItem>| {
+            validation: |validation_data: hdk::EntryValidationData<HoloJsEntry>| {
                 Ok(())
             }, 
             links: [
                 to!(
-                    "listItem",
+                    "HoloJsEntry",
                     link_type: "items",
                     validation_package: || hdk::ValidationPackageDefinition::Entry,
                     validation: |_validation_data: hdk::LinkValidationData| {
@@ -77,12 +77,12 @@ define_zome! {
  
 	functions: [
         create_list: {
-            inputs: |list: List|,
+            inputs: |collection: Collection|,
             outputs: |result: ZomeApiResult<Address>|,
             handler: handle_create_list
         }
         add_item: {
-            inputs: |list_item: ListItem, list_addr: HashString|,
+            inputs: |item: HoloJsEntry, base_addr: HashString|,
             outputs: |result: ZomeApiResult<Address>|,
             handler: handle_add_item
         }
@@ -107,7 +107,7 @@ define_zome! {
             handler: handle_unlink_items
         }
         update_item: {
-            inputs: |new_entry: ListItem,item_address: HashString|,
+            inputs: |new_entry: HoloJsEntry,item_address: HashString|,
             outputs: |result: ZomeApiResult<Address>|,
             handler: handle_update_item
         }
@@ -129,12 +129,12 @@ define_zome! {
      
 
 #[derive(Serialize, Deserialize, Debug, Clone, DefaultJson)]
-struct List {
+struct Collection {
     name: String
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, DefaultJson,PartialEq)]
-struct ListItem {
+struct HoloJsEntry {
     entityType: String,
     item: JsonString
 }
@@ -148,7 +148,7 @@ struct SearchObject {
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 struct GetListResponse {
     name: String,
-    items: Vec<ListItem>
+    items: Vec<HoloJsEntry>
 }
 
 
@@ -178,18 +178,18 @@ fn handle_unlink_items(target:Address,base_item:Address,link_tag:String)-> ZomeA
   Ok(true)
 }
 
-fn  handle_update_item(new_entry: ListItem, address: Address) -> ZomeApiResult<Address> {
-      let new_entry: ListItem = new_entry.into();
+fn  handle_update_item(new_entry: HoloJsEntry, address: Address) -> ZomeApiResult<Address> {
+      let new_entry: HoloJsEntry = new_entry.into();
      hdk::update_entry(
-        Entry::App("listItem".into(),new_entry.into()),
+        Entry::App("HoloJsEntry".into(),new_entry.into()),
         &address.clone()
     )
 }
-fn handle_create_list(list: List) -> ZomeApiResult<Address> {
+fn handle_create_list(collection: Collection) -> ZomeApiResult<Address> {
     // define the entry
     let list_entry = Entry::App(
-        "list".into(),
-        list.into()
+        "collection".into(),
+        collection.into()
     );
 
     // commit the entry and return the address
@@ -197,65 +197,65 @@ fn handle_create_list(list: List) -> ZomeApiResult<Address> {
 }
 
 
-fn handle_add_item(list_item: ListItem, list_addr: HashString) -> ZomeApiResult<Address> {
-    let clone_item:ListItem = list_item.clone();
+fn handle_add_item(item: HoloJsEntry, base_addr: HashString) -> ZomeApiResult<Address> {
+    let clone_item:HoloJsEntry = item.clone();
     // define the entry
-    let list_item_entry = Entry::App(
-        "listItem".into(),
-        list_item.into()
+    let item = Entry::App(
+        "HoloJsEntry".into(),
+        item.into()
     );
     
-	let item_addr = hdk::commit_entry(&list_item_entry)?; // commit the list item
-	hdk::link_entries(&list_addr, &item_addr, "items",&clone_item.entityType)?; // if successful, link to list address
+	let item_addr = hdk::commit_entry(&item)?; // commit the collection item
+	hdk::link_entries(&base_addr, &item_addr, "items",&clone_item.entityType)?; // if successful, link to collection address
 	Ok(item_addr)
 }
 
 
 fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetListResponse> {
-    // load the list entry. Early return error if it cannot load or is wrong type
-    let list = hdk::utils::get_as_type::<List>(list_addr.clone())?;
+    // load the collection entry. Early return error if it cannot load or is wrong type
+    let collection = hdk::utils::get_as_type::<Collection>(list_addr.clone())?;
    
-    // try and load the list items, filter out errors and collect in a vector
-    let list_items = hdk::get_links(&list_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
+    // try and load the collection items, filter out errors and collect in a vector
+    let holojs_items = hdk::get_links(&list_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
         .iter()
         .map(|item_address| {            
-            hdk::utils::get_as_type::<ListItem>(item_address.to_owned())
+            hdk::utils::get_as_type::<HoloJsEntry>(item_address.to_owned())
         })
         .filter_map(Result::ok)    
-        .collect::<Vec<ListItem>>();
+        .collect::<Vec<HoloJsEntry>>();
 
     // filter the results
-        let curated_list: Vec<ListItem> = 
-        list_items.into_iter()
+        let curated_list: Vec<HoloJsEntry> = 
+        holojs_items.into_iter()
         .filter(|item| search_something(search.clone(), item))
         .collect(); 
-    //  then return the list items
+    //  then return the collection items
     Ok(GetListResponse{
-        name: "list.name".to_string(),
+        name: "collection.name".to_string(),
         items: curated_list
     })
 }
 
 fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetListResponse> {
-    // load the list entry. Early return error if it cannot load or is wrong type
-    let list = hdk::utils::get_as_type::<ListItem>(item_addr.clone())?;   
-    // try and load the list items, filter out errors and collect in a vector
-    let list_items = hdk::get_links(&item_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
+    // load the collection entry. Early return error if it cannot load or is wrong type
+    let collection = hdk::utils::get_as_type::<HoloJsEntry>(item_addr.clone())?;   
+    // try and load the collection items, filter out errors and collect in a vector
+    let holojs_items = hdk::get_links(&item_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
         .iter()
         .map(|item_address| {            
-            hdk::utils::get_as_type::<ListItem>(item_address.to_owned())
+            hdk::utils::get_as_type::<HoloJsEntry>(item_address.to_owned())
         })
         .filter_map(Result::ok)    
-        .collect::<Vec<ListItem>>();
+        .collect::<Vec<HoloJsEntry>>();
 
     // filter the results
-        let curated_list: Vec<ListItem> = 
-        list_items.into_iter()
+        let curated_list: Vec<HoloJsEntry> = 
+        holojs_items.into_iter()
         .filter(|item| search_something(search.clone(), item))
         .collect(); 
-    //  then return the list items
+    //  then return the collection items
     Ok(GetListResponse{
-        name: "list.name".to_string(),
+        name: "collection.name".to_string(),
         items: curated_list
     })
 
@@ -314,7 +314,7 @@ fn evaluateIsOperator(operator:String,searchval:Value,e:Value)->bool{
 // TODO : search mode AND / OR 
 // TODO  operateur regexp
 
-fn search_something(_search:JsonString,_item:&ListItem)->bool {    
+fn search_something(_search:JsonString,_item:&HoloJsEntry)->bool {    
     let s:Value= serde_json::from_str(&_search.to_string()).unwrap();
     let e:Value= serde_json::from_str(&_item.item.to_string()).unwrap(); 
     let mut res: bool = true;
