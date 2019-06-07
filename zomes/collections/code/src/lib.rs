@@ -76,10 +76,10 @@ define_zome! {
     }
  
 	functions: [
-        create_list: {
+        create_collection: {
             inputs: |collection: Collection|,
             outputs: |result: ZomeApiResult<Address>|,
-            handler: handle_create_list
+            handler: handle_create_collection
         }
         add_item: {
             inputs: |item: HoloJsEntry, base_addr: HashString|,
@@ -123,7 +123,7 @@ define_zome! {
         }
     ]
     traits: {
-        hc_public [get_linked_items,create_list, add_item, get_list,link_bidir,delete_item,update_item,unlink_items,link_items]
+        hc_public [get_linked_items,create_collection, add_item, get_list,link_bidir,delete_item,update_item,unlink_items,link_items]
     }
 }
      
@@ -185,7 +185,7 @@ fn  handle_update_item(new_entry: HoloJsEntry, address: Address) -> ZomeApiResul
         &address.clone()
     )
 }
-fn handle_create_list(collection: Collection) -> ZomeApiResult<Address> {
+fn handle_create_collection(collection: Collection) -> ZomeApiResult<Address> {
     // define the entry
     let list_entry = Entry::App(
         "collection".into(),

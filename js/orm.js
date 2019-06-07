@@ -13,9 +13,9 @@ class HoloJs {
         let payload = { list_item: item2add, list_addr: base_addr };
         await this.callHoloInstance('lists', 'add_item',payload);  
     };  
-    async create_list(list_name) {
+    async create_collection(list_name) {
         let payload = { list: { name: list_name } };
-        await this.callHoloInstance('lists', 'create_list',payload);  
+        await this.callHoloInstance('lists', 'create_collection',payload);  
     };    
   }
 
@@ -25,5 +25,5 @@ class HoloJs {
       }
   }
 
-  const r = new Post(instance).create_list();
+  const r = new Post(instance).create_collection();
   console.log(r);
