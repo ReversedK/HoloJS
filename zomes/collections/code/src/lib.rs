@@ -4,8 +4,6 @@ extern crate hdk;
 #[macro_use]
 extern crate serde_derive;
 
-
-
 #[macro_use]
 extern crate holochain_core_types_derive;
 
@@ -22,12 +20,8 @@ use hdk::{
         
     }
 };
-
-
 use serde_json;
 use serde_json::value::Value;
-
-
  
 define_zome! {
     entries: [
@@ -87,13 +81,13 @@ define_zome! {
             handler: handle_add_item
         }
         get_list: {
-            inputs: |list_addr: HashString, link_tag: String,search: JsonString|,
-            outputs: |result: ZomeApiResult<GetListResponse>|,
+            inputs: |collection_addr: HashString, link_tag: String,search: JsonString|,
+            outputs: |result: ZomeApiResult<GetCollectionResponse>|,
             handler: handle_get_list
         }
         get_linked_items: {
             inputs: |item_addr: HashString, link_tag: String,search: JsonString|,
-            outputs: |result: ZomeApiResult<GetListResponse>|,
+            outputs: |result: ZomeApiResult<GetCollectionResponse>|,
             handler: handle_get_linked_items
         }
         link_items: {
@@ -125,8 +119,7 @@ define_zome! {
     traits: {
         hc_public [get_linked_items,create_collection, add_item, get_list,link_bidir,delete_item,update_item,unlink_items,link_items]
     }
-}
-     
+}     
 
 #[derive(Serialize, Deserialize, Debug, Clone, DefaultJson)]
 struct Collection {
@@ -146,13 +139,10 @@ struct SearchObject {
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
-struct GetListResponse {
+struct GetCollectionResponse {
     name: String,
     items: Vec<HoloJsEntry>
 }
-
-
-
 
 /******************************************** */
 /************     Handlers   ***************** */
@@ -191,11 +181,9 @@ fn handle_create_collection(collection: Collection) -> ZomeApiResult<Address> {
         "collection".into(),
         collection.into()
     );
-
     // commit the entry and return the address
 	hdk::commit_entry(&list_entry)
 }
-
 
 fn handle_add_item(item: HoloJsEntry, base_addr: HashString) -> ZomeApiResult<Address> {
     let clone_item:HoloJsEntry = item.clone();
@@ -211,12 +199,12 @@ fn handle_add_item(item: HoloJsEntry, base_addr: HashString) -> ZomeApiResult<Ad
 }
 
 
-fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetListResponse> {
+fn handle_get_list(collection_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetCollectionResponse> {
     // load the collection entry. Early return error if it cannot load or is wrong type
-    let collection = hdk::utils::get_as_type::<Collection>(list_addr.clone())?;
+    let collection = hdk::utils::get_as_type::<Collection>(collection_addr.clone())?;
    
     // try and load the collection items, filter out errors and collect in a vector
-    let holojs_items = hdk::get_links(&list_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
+    let holojs_items = hdk::get_links(&collection_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
         .iter()
         .map(|item_address| {            
             hdk::utils::get_as_type::<HoloJsEntry>(item_address.to_owned())
@@ -230,13 +218,13 @@ fn handle_get_list(list_addr: HashString,link_tag: String,search:JsonString) -> 
         .filter(|item| search_something(search.clone(), item))
         .collect(); 
     //  then return the collection items
-    Ok(GetListResponse{
+    Ok(GetCollectionResponse{
         name: "collection.name".to_string(),
         items: curated_list
     })
 }
 
-fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetListResponse> {
+fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetCollectionResponse> {
     // load the collection entry. Early return error if it cannot load or is wrong type
     let collection = hdk::utils::get_as_type::<HoloJsEntry>(item_addr.clone())?;   
     // try and load the collection items, filter out errors and collect in a vector
@@ -254,7 +242,7 @@ fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonStr
         .filter(|item| search_something(search.clone(), item))
         .collect(); 
     //  then return the collection items
-    Ok(GetListResponse{
+    Ok(GetCollectionResponse{
         name: "collection.name".to_string(),
         items: curated_list
     })
@@ -332,7 +320,6 @@ fn search_something(_search:JsonString,_item:&HoloJsEntry)->bool {
             };
             if estimation.is_ok() {
                 if estimation.clone().ok().unwrap()==false {  // this is an AND query : if anything is false, it's a no
-                    hdk::debug(key.to_string());
                     res=estimation.ok().unwrap(); 
                 }
             }
