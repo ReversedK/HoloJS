@@ -173,8 +173,10 @@ fn  handle_update_item(new_entry: HoloJsEntry, address: Address) -> ZomeApiResul
      hdk::update_entry(
         Entry::App("HoloJsEntry".into(),new_entry.into()),
         &address.clone()
-    )
+    )?;
+    Ok(address)    
 }
+
 fn handle_create_collection(collection: Collection) -> ZomeApiResult<Address> {
     // define the entry
     let list_entry = Entry::App(
@@ -259,36 +261,36 @@ fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonStr
 fn evaluateIsOperator(operator:String,searchval:Value,e:Value)->bool{
     
     if &operator=="is" {
-    if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()==searchval.as_u64() }
-    else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()==searchval.as_i64() }
-    else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()==searchval.as_f64() }
-    else if searchval.is_string() { hdk::debug("is string----------------");e.as_str()==searchval.as_str() }
+    if searchval.is_u64() { e.as_u64()==searchval.as_u64() }
+    else if searchval.is_i64() { e.as_i64()==searchval.as_i64() }
+    else if searchval.is_f64() { e.as_f64()==searchval.as_f64() }
+    else if searchval.is_string() { e.as_str()==searchval.as_str() }
     else {false}
     }   else if &operator=="is_not" {
-    if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()!=searchval.as_u64() }
-    else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()!=searchval.as_i64() }
-    else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()!=searchval.as_f64() }
-    else if searchval.is_string() { hdk::debug("is string----------------");e.as_str()!=searchval.as_str() }
+    if searchval.is_u64() { e.as_u64()!=searchval.as_u64() }
+    else if searchval.is_i64() { e.as_i64()!=searchval.as_i64() }
+    else if searchval.is_f64() { e.as_f64()!=searchval.as_f64() }
+    else if searchval.is_string() { e.as_str()!=searchval.as_str() }
     else {false}
     } else if &operator=="is_less_than"{
-    if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()<searchval.as_u64() }
-    else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()<searchval.as_i64() }
-    else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()<searchval.as_f64() }
+    if searchval.is_u64() { e.as_u64()<searchval.as_u64() }
+    else if searchval.is_i64() { e.as_i64()<searchval.as_i64() }
+    else if searchval.is_f64() { e.as_f64()<searchval.as_f64() }
     else {false}
     } else if &operator=="is_more_than"{
-    if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()>searchval.as_u64() }
-    else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()>searchval.as_i64() }
-    else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()>searchval.as_f64() }
+    if searchval.is_u64() { e.as_u64()>searchval.as_u64() }
+    else if searchval.is_i64() { e.as_i64()>searchval.as_i64() }
+    else if searchval.is_f64() { e.as_f64()>searchval.as_f64() }
     else {false}
     }else if &operator=="more_or_equal_than"{
-    if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()>=searchval.as_u64() }
-    else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()>=searchval.as_i64() }
-    else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()>=searchval.as_f64() }
+    if searchval.is_u64() { e.as_u64()>=searchval.as_u64() }
+    else if searchval.is_i64() { e.as_i64()>=searchval.as_i64() }
+    else if searchval.is_f64() { e.as_f64()>=searchval.as_f64() }
     else {false}
     } else if &operator=="less_or_equal_than"{
-    if searchval.is_u64() { hdk::debug("is U64----------------");e.as_u64()<=searchval.as_u64() }
-    else if searchval.is_i64() { hdk::debug("is I64----------------");e.as_i64()<=searchval.as_i64() }
-    else if searchval.is_f64() { hdk::debug("is F64----------------");e.as_f64()<=searchval.as_f64() }
+    if searchval.is_u64() { e.as_u64()<=searchval.as_u64() }
+    else if searchval.is_i64() { e.as_i64()<=searchval.as_i64() }
+    else if searchval.is_f64() { e.as_f64()<=searchval.as_f64() }
     else {false}
     } else {false}
 

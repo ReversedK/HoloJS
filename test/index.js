@@ -69,6 +69,22 @@ scenario.runTape('Insert a post with tags, modify it and retrieve collections : 
   const postsForTag1 = await alice.callSync('collections', 'get_linked_items', { item_addr: addr_tag1.Ok, link_tag : "tag" ,search: "{}" });
   //console.log("postsForTag1:",postsForTag1.Ok.items)
   t.equal(postsForTag1.Ok.items.length, 2, 'there should be 2 items with tag1')
+
+   // unlink post1 and tag 1
+
+   const unlink = await alice.callSync('collections', 'unlink_items', { target: addr_tag1.Ok, link_tag : "tag" ,base_item: addr_post1.Ok });
+   t.notEqual(unlink.Ok, undefined)
+   const unlink2 = await alice.callSync('collections', 'unlink_items', { base_item: addr_tag1.Ok, link_tag : "tag" ,target: addr_post1.Ok });
+   t.notEqual(unlink2.Ok, undefined)
+  
+
+   const npostsForTag1 = await alice.callSync('collections', 'get_linked_items', { item_addr: addr_tag1.Ok, link_tag : "tag" ,search: "{}" });
+   //console.log("postsForTag1:",postsForTag1.Ok.items)
+   t.equal(npostsForTag1.Ok.items.length, 1, 'there should be 1 items with tag1')
+   
+  
+  
+  
   // searchpost for tag 2
   const postsForTag2 = await alice.callSync('collections', 'get_linked_items', { item_addr: addr_tag2.Ok, link_tag : "tag" ,search: "{}" });
  // console.log("postsForTag2:",postsForTag2.Ok.items)
