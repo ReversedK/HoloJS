@@ -68,7 +68,7 @@ class HoloJs {
 
     async find(search={}) {
         let payload = { 
-            list_addr: this.collection_addr,
+            collection_addr: this.collection_addr,
             link_tag : this.collection_name,
             search : JSON.stringify(search)
           };
