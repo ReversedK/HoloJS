@@ -6,7 +6,7 @@ const agentAlice = Config.agent('alice')
 const instanceAlice = Config.instance(agentAlice, dna)
 
 
-const scenario = new Scenario([instanceAlice],{ debugLog:false })
+const scenario = new Scenario([instanceAlice],{ debugLog:true })
 
 
 /*
@@ -95,7 +95,11 @@ scenario.runTape('Insert a post with tags, modify it and retrieve collections : 
   t.equal(allPosts.Ok.items.length, 2, 'there should be 2 items in the post collection')
 
   // search post with criterias 
-  let search_criterias = JSON.stringify({name:{"does_not_contain":"ORM"},id:{"more_or_equal_than":1}});
+  let search_criterias = JSON.stringify(
+    {"or":{
+      "name":{"does_not_contain":"Holo"},
+      "id":{"more_or_equal_than":2}
+  }});
   const sPosts = await alice.callSync('collections', 'get_list', { collection_addr: listAddr, link_tag : "article" ,search: search_criterias})
   console.log("allPosts criterias",sPosts.Ok.items)
   t.equal(sPosts.Ok.items.length, 1, 'there should be 1 item in the post collection after search')

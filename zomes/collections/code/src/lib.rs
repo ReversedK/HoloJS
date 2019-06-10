@@ -213,7 +213,7 @@ fn handle_get_list(collection_addr: HashString,link_tag: String,search:JsonStrin
     let collection = hdk::utils::get_as_type::<Collection>(collection_addr.clone())?;
    
     // try and load the collection items, filter out errors and collect in a vector
-    let holojs_items : Vec<GetHoloJsEntry>  = hdk::get_links(&collection_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
+    let holojs_items : Vec<GetHoloJsEntry>  = hdk::get_links(&collection_addr, Some("items".into()),Some(link_tag.clone().into()))?.addresses()
         .iter()
         .map(|item_address|-> ZomeApiResult<GetHoloJsEntry>  {            
            let the_entry = hdk::utils::get_as_type::<HoloJsEntry>(item_address.to_owned())?;
@@ -229,7 +229,7 @@ fn handle_get_list(collection_addr: HashString,link_tag: String,search:JsonStrin
         .collect::<Vec<GetHoloJsEntry>>(); 
     //  then return the collection items
     Ok(GetCollectionResponse{
-        name: link_tag,
+        name: link_tag.clone(),
         items: curated_list
     })
 }
@@ -239,7 +239,7 @@ fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonStr
     let base_item = hdk::utils::get_as_type::<HoloJsEntry>(item_addr.clone())?;
    
     // try and load the  items linked to base_item, filter out errors and collect in a vector
-    let holojs_items = hdk::get_links(&item_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
+    let holojs_items = hdk::get_links(&item_addr, Some("items".into()),Some(link_tag.clone().into()))?.addresses()
         .iter()
         .map(|item_address|-> ZomeApiResult<GetHoloJsEntry>  {            
            let the_entry = hdk::utils::get_as_type::<HoloJsEntry>(item_address.to_owned())?;
@@ -255,7 +255,7 @@ fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonStr
         .collect(); 
     //  then return the  items encapsulated in a GetCollectionResponse struct
     Ok(GetCollectionResponse{
-        name: link_tag
+        name: link_tag.clone(),
         items: curated_list
     })
 }
@@ -320,22 +320,28 @@ fn search_something(_search:JsonString,_item:&GetHoloJsEntry)->bool {
     let mut res: bool = true;
     let search_obj = s.as_object().unwrap();
     //let foo = obj.get("item").unwrap();
-    for (key, search_object_json) in search_obj.iter() {     
+    for (operator, search_object_json) in search_obj.iter() {  
+        if operator=="or" { res = false; } // if operator is or we start at false
         let search_object = search_object_json.as_object().unwrap();
-        for (key2, searchvalue) in search_object.iter() {
-        // not an array of condition, just one
-        let estimation: Result<bool,String> = match key2.as_str() {        
-        "contains" => Ok(e[&key].as_str().unwrap().contains(searchvalue.as_str().unwrap())),
-        "does_not_contain" => Ok(!e[&key].as_str().unwrap().contains(searchvalue.as_str().unwrap())),       
-        "is" | "is_more_than" | "is_less_than" | "is_not" | "more_or_equal_than" | "less_or_equal_than" => Ok(evaluateIsOperator(key2.to_string(),searchvalue.clone(), e[&key].clone())),  
-        _ => Err("error".to_string())
-            };
-            if estimation.is_ok() {
-                if estimation.clone().ok().unwrap()==false {  // this is an AND query : if anything is false, it's a no
-                    res=estimation.ok().unwrap(); 
+         for (field, search_object_json_1) in search_object.iter() {
+            let search_object2 = search_object_json_1.as_object().unwrap();
+            for (key2, searchvalue) in search_object2.iter() {
+            // not an array of condition, just one
+            let estimation: Result<bool,String> = match key2.as_str() {        
+            "contains" => Ok(e[&field].as_str().unwrap().contains(searchvalue.as_str().unwrap())),
+            "does_not_contain" => Ok(!e[&field].as_str().unwrap().contains(searchvalue.as_str().unwrap())),       
+            "is" | "is_more_than" | "is_less_than" | "is_not" | "more_or_equal_than" | "less_or_equal_than" => Ok(evaluateIsOperator(key2.to_string(),searchvalue.clone(), e[&field].clone())),  
+            _ => Err("error".to_string())
+                };
+                if estimation.is_ok() {
+                    if operator=="and" && estimation.clone().ok().unwrap()==false {  // this is an AND query : if anything is false, it's a no
+                        res=estimation.ok().unwrap(); 
+                    } else if operator=="or" && estimation.clone().ok().unwrap()==true {  // this is an OR query : if anything is true, it's a go
+                        res=estimation.ok().unwrap(); 
+                    }
                 }
             }
-        }
+         }
     }
     res
 }
