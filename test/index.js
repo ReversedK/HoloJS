@@ -87,7 +87,7 @@ scenario.runTape('Insert a post with tags, modify it and retrieve collections : 
   
   // searchpost for tag 2
   const postsForTag2 = await alice.callSync('collections', 'get_linked_items', { item_addr: addr_tag2.Ok, link_tag : "tag" ,search: "{}" });
- // console.log("postsForTag2:",postsForTag2.Ok.items)
+ console.log("postsForTag2:",postsForTag2.Ok)
   t.equal(postsForTag2.Ok.items.length, 1, 'there should be 1 item with tag2')
 // get all the posts 
   let allPosts = await alice.callSync('collections', 'get_list', { collection_addr: listAddr, link_tag : "article" ,search: "{}"})

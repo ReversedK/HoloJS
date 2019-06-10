@@ -229,16 +229,16 @@ fn handle_get_list(collection_addr: HashString,link_tag: String,search:JsonStrin
         .collect::<Vec<GetHoloJsEntry>>(); 
     //  then return the collection items
     Ok(GetCollectionResponse{
-        name: "Result".to_string(),
+        name: link_tag,
         items: curated_list
     })
 }
 
 fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetCollectionResponse> {
-    // load the collection entry. Early return error if it cannot load or is wrong type
-    let collection = hdk::utils::get_as_type::<HoloJsEntry>(item_addr.clone())?;
+    // load the  entry. Early return error if it cannot load or is wrong type
+    let base_item = hdk::utils::get_as_type::<HoloJsEntry>(item_addr.clone())?;
    
-    // try and load the collection items, filter out errors and collect in a vector
+    // try and load the  items linked to base_item, filter out errors and collect in a vector
     let holojs_items = hdk::get_links(&item_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
         .iter()
         .map(|item_address|-> ZomeApiResult<GetHoloJsEntry>  {            
@@ -253,36 +253,13 @@ fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonStr
         holojs_items.into_iter()
         .filter(|item| search_something(search.clone(), item))
         .collect(); 
-    //  then return the collection items
+    //  then return the  items encapsulated in a GetCollectionResponse struct
     Ok(GetCollectionResponse{
-        name: "collection.name".to_string(),
+        name: link_tag
         items: curated_list
     })
 }
-/*fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetCollectionResponse> {
-    // load the collection entry. Early return error if it cannot load or is wrong type
-    let collection = hdk::utils::get_as_type::<HoloJsEntry>(item_addr.clone())?;   
-    // try and load the collection items, filter out errors and collect in a vector
-    let holojs_items = hdk::get_links(&item_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
-        .iter()
-        .map(|item_address| {            
-            hdk::utils::get_as_type::<HoloJsEntry>(item_address.to_owned())
-        })
-        .filter_map(Result::ok)    
-        .collect::<Vec<HoloJsEntry>>();
 
-    // filter the results
-        let curated_list: Vec<HoloJsEntry> = 
-        holojs_items.into_iter()
-        .filter(|item| search_something(search.clone(), item))
-        .collect(); 
-    //  then return the collection items
-    Ok(GetCollectionResponse{
-        name: "collection.name".to_string(),
-        items: curated_list
-    })
-
-}*/
 
 /******************************************** */
 /************     Fn         ***************** */

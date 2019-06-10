@@ -1,5 +1,5 @@
 
-const superagent = require('superagent');
+const xhr = require('superagent');
 
 class HoloJs {
     constructor(instance_name,conductor_endpoint='http://localhost:8888') {      
@@ -23,8 +23,7 @@ class HoloJs {
 
     async callHoloInstance(zome,fn,payload,callback=false) {
         let response;
-        payload = this.preparePayload(zome,fn,payload);
-        let xhr = superagent;
+        payload = this.preparePayload(zome,fn,payload);       
         
         if(typeof callback == 'function') 
             xhr.post(this.conductor_endpoint).set('Content-Type', 'application/json').set('accept', 'json')
@@ -39,9 +38,9 @@ class HoloJs {
         }
     }
 
-    /************** */
-    /* ORM methods */
-    /************** */
+    /************** ***************/
+    /* CRUD methods & some more...*/
+    /*************************** */
     async add(item2add) { 
         item2add.entityType = this.collection_name;       
         item2add = {  entityType: item2add.entityType, item: JSON.stringify(item2add) }      
