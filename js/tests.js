@@ -1,35 +1,18 @@
 const HoloJs = require("./holojs.js");
 
-
-class Post extends HoloJs {
-    constructor(instance_name) { 
-       super(instance_name);  
-       this.collection_name = "posts";
-   }
-   async setup() {
-       this.collection_addr = await this.create_collection(this.collection_name);       
-   }
- }
-
- class Tag extends HoloJs {
-   constructor(instance_name) { 
-      super(instance_name);  
-      this.collection_name = "tags";
-  }
-  
-  async setup() {
-      this.collection_addr = await this.create_collection(this.collection_name);       
-  }
+const config = {
+  instance_name:"test-instance",
+  conductor_endpoint:'http://localhost:8888'  
 }
 
- async function main() {
-   const post =  new Post("test-instance")
+ async function main() {   
+   let post = new HoloJs("posts",config)
    await post.setup();  
        
    const post_addr = await post.add({"title":"yoyo"+new Date().getTime()});    
    console.log('post:',post_addr)
 
-   const tag = new Tag("test-instance");
+   const tag = new HoloJs("tag",config);
    await tag.setup();
    const tag_addr = await tag.add({"name":"beautiful "+new Date().getTime()});    
    console.log('tag:',tag_addr);
@@ -56,7 +39,7 @@ setTimeout(async()=>{
    console.log('update:',p)  
    let f = await post.delete(post_addr)  
    console.log('delete:',f) 
-   let re = await post.find({"title":{"contains":"yo"}})
+   let re = await post.find({"and":{"title":{"contains":"yo"}}})
    console.log("find:",re)
 },500)
  }

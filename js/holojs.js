@@ -2,11 +2,14 @@
 const xhr = require('superagent');
 
 class HoloJs {
-    constructor(instance_name,conductor_endpoint='http://localhost:8888') {      
-      this.instance_name = instance_name; 
-      this.conductor_endpoint = conductor_endpoint;   
+    constructor(collection_name,config) { 
+      this.collection_name = collection_name;     
+      this.instance_name = config.instance_name; 
+      this.conductor_endpoint = config.conductor_endpoint;   
     }  
-
+    async setup() {
+      this.collection_addr = await this.create_collection(this.collection_name);       
+  }
     preparePayload(zome,fn,payload_obj) {
        return {
             "jsonrpc": "2.0",
