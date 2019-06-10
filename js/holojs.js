@@ -2,8 +2,9 @@
 const superagent = require('superagent');
 
 class HoloJs {
-    constructor(instance_name) {      
-      this.instance_name = instance_name;    
+    constructor(instance_name,conductor_endpoint='http://localhost:8888') {      
+      this.instance_name = instance_name; 
+      this.conductor_endpoint = conductor_endpoint;   
     }  
 
     preparePayload(zome,fn,payload_obj) {
@@ -26,12 +27,12 @@ class HoloJs {
         let xhr = superagent;
         
         if(typeof callback == 'function') 
-            xhr.post('http://localhost:8888').set('Content-Type', 'application/json').set('accept', 'json')
+            xhr.post(this.conductor_endpoint).set('Content-Type', 'application/json').set('accept', 'json')
             .send(payload) 
             .end((err, res) => {
              callback(err,res.body);
         }); else {
-            response = await xhr.post('http://localhost:8888').set('Content-Type', 'application/json').set('accept', 'json').send(payload);
+            response = await xhr.post(this.conductor_endpoint).set('Content-Type', 'application/json').set('accept', 'json').send(payload);
             try {                
             return JSON.parse(response.body.result).Ok
             } catch(e) { console.log(e); console.log(response.body);return e;}

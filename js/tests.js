@@ -1,4 +1,4 @@
-const HoloJs = require("./orm.js");
+const HoloJs = require("./holojs.js");
 
 
 class Post extends HoloJs {
@@ -40,21 +40,24 @@ class Post extends HoloJs {
   /* let re = await post.find({"title":{"contains":"yo"}})
    console.log("find:",re)*/
 
-   await post.unlink(post_addr,tag_addr,"tags");
+   let t0 = await post.unlink(post_addr,tag_addr,"tags");
+   console.log(t0);
    let t = await post.unlink(tag_addr,post_addr,"tags");
    console.log(t);
-
+setTimeout(async()=>{
    let post_tags = await post.findLinkedItems(post_addr,"tags",{});
    console.log("tags for this post",post_tags);
   
    let tag_post = await tag.findLinkedItems(tag_addr,"tags",{});
    console.log("post for this tag",tag_post);
-/*
+
+
    let p=await post.update({"title":"yoyox the great was : "+new Date().getTime()},post_addr);
    console.log('update:',p)  
    let f = await post.delete(post_addr)  
    console.log('delete:',f) 
    let re = await post.find({"title":{"contains":"yo"}})
-   console.log("find:",re)*/
+   console.log("find:",re)
+},500)
  }
  main();

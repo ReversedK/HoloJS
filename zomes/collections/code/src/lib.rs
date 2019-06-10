@@ -127,13 +127,20 @@ struct Collection {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, DefaultJson,PartialEq)]
+struct GetHoloJsEntry {
+    entityType: String,
+    item: JsonString,
+    addr : HashString
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, DefaultJson,PartialEq)]
 struct HoloJsEntry {
     entityType: String,
     item: JsonString
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, DefaultJson)]
-struct SearchObject {
+struct SearchObject {    
     entityType: String,
     item: JsonString
 }
@@ -141,7 +148,7 @@ struct SearchObject {
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 struct GetCollectionResponse {
     name: String,
-    items: Vec<HoloJsEntry>
+    items: Vec<GetHoloJsEntry>
 }
 
 /******************************************** */
@@ -206,16 +213,43 @@ fn handle_get_list(collection_addr: HashString,link_tag: String,search:JsonStrin
     let collection = hdk::utils::get_as_type::<Collection>(collection_addr.clone())?;
    
     // try and load the collection items, filter out errors and collect in a vector
-    let holojs_items = hdk::get_links(&collection_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
+    let holojs_items : Vec<GetHoloJsEntry>  = hdk::get_links(&collection_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
         .iter()
-        .map(|item_address| {            
-            hdk::utils::get_as_type::<HoloJsEntry>(item_address.to_owned())
+        .map(|item_address|-> ZomeApiResult<GetHoloJsEntry>  {            
+           let the_entry = hdk::utils::get_as_type::<HoloJsEntry>(item_address.to_owned())?;
+           Ok(GetHoloJsEntry { addr : item_address.clone(), item: the_entry.item,entityType:the_entry.entityType})          
         })
         .filter_map(Result::ok)    
-        .collect::<Vec<HoloJsEntry>>();
+        .collect::<Vec<GetHoloJsEntry>>();
 
     // filter the results
-        let curated_list: Vec<HoloJsEntry> = 
+        let curated_list: Vec<GetHoloJsEntry> = 
+        holojs_items.into_iter()
+        .filter(|item| search_something(search.clone(), &item.clone()))
+        .collect::<Vec<GetHoloJsEntry>>(); 
+    //  then return the collection items
+    Ok(GetCollectionResponse{
+        name: "Result".to_string(),
+        items: curated_list
+    })
+}
+
+fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetCollectionResponse> {
+    // load the collection entry. Early return error if it cannot load or is wrong type
+    let collection = hdk::utils::get_as_type::<HoloJsEntry>(item_addr.clone())?;
+   
+    // try and load the collection items, filter out errors and collect in a vector
+    let holojs_items = hdk::get_links(&item_addr, Some("items".into()),Some(link_tag.into()))?.addresses()
+        .iter()
+        .map(|item_address|-> ZomeApiResult<GetHoloJsEntry>  {            
+           let the_entry = hdk::utils::get_as_type::<HoloJsEntry>(item_address.to_owned())?;
+           Ok(GetHoloJsEntry { addr : item_address.to_owned(), item: the_entry.item,entityType:the_entry.entityType})          
+        })
+        .filter_map(Result::ok)    
+        .collect::<Vec<GetHoloJsEntry>>();
+
+    // filter the results
+        let curated_list: Vec<GetHoloJsEntry> = 
         holojs_items.into_iter()
         .filter(|item| search_something(search.clone(), item))
         .collect(); 
@@ -225,8 +259,7 @@ fn handle_get_list(collection_addr: HashString,link_tag: String,search:JsonStrin
         items: curated_list
     })
 }
-
-fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetCollectionResponse> {
+/*fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonString) -> ZomeApiResult<GetCollectionResponse> {
     // load the collection entry. Early return error if it cannot load or is wrong type
     let collection = hdk::utils::get_as_type::<HoloJsEntry>(item_addr.clone())?;   
     // try and load the collection items, filter out errors and collect in a vector
@@ -249,7 +282,7 @@ fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonStr
         items: curated_list
     })
 
-}
+}*/
 
 /******************************************** */
 /************     Fn         ***************** */
@@ -304,7 +337,7 @@ fn evaluateIsOperator(operator:String,searchval:Value,e:Value)->bool{
 // TODO : search mode AND / OR 
 // TODO  operateur regexp
 
-fn search_something(_search:JsonString,_item:&HoloJsEntry)->bool {    
+fn search_something(_search:JsonString,_item:&GetHoloJsEntry)->bool {    
     let s:Value= serde_json::from_str(&_search.to_string()).unwrap();
     let e:Value= serde_json::from_str(&_item.item.to_string()).unwrap(); 
     let mut res: bool = true;

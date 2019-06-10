@@ -1,6 +1,6 @@
 const { Config, Scenario } = require('@holochain/holochain-nodejs')
 Scenario.setTape(require('tape'))
-const dnaPath = 'dist/orm.dna.json'
+const dnaPath = '/media/revk/DATA/Dev/Workspaces/Holochain/orm/dist/orm.dna.json'
 const dna = Config.dna(dnaPath, 'happs')
 const agentAlice = Config.agent('alice')
 const instanceAlice = Config.instance(agentAlice, dna)
@@ -61,7 +61,7 @@ scenario.runTape('Insert a post with tags, modify it and retrieve collections : 
   const result3 = await alice.callSync('collections', 'link_bidir', { item_a: addr_post2.Ok, item_b: addr_tag1.Ok,link_tag_ab:"tag",link_tag_ba:"tag" })
   t.equal(result1.Ok, true, 'Bidir link sould return true')
     
-  // update post 1
+  // update post 1  
   const update = await alice.callSync('collections', 'update_item', { new_entry: post1mod, item_address: addr_post1.Ok })
   t.notEqual(update.Ok, undefined)
   
@@ -90,14 +90,14 @@ scenario.runTape('Insert a post with tags, modify it and retrieve collections : 
  // console.log("postsForTag2:",postsForTag2.Ok.items)
   t.equal(postsForTag2.Ok.items.length, 1, 'there should be 1 item with tag2')
 // get all the posts 
-  let allPosts = await alice.callSync('collections', 'get_list', { list_addr: listAddr, link_tag : "article" ,search: "{}"})
-  if(allPosts.hasOwnProperty("Ok"))console.log("allPosts",allPosts.Ok.items)
+  let allPosts = await alice.callSync('collections', 'get_list', { collection_addr: listAddr, link_tag : "article" ,search: "{}"})
+  console.log("allPosts",allPosts.Ok.items)
   t.equal(allPosts.Ok.items.length, 2, 'there should be 2 items in the post collection')
 
   // search post with criterias 
   let search_criterias = JSON.stringify({name:{"does_not_contain":"ORM"},id:{"more_or_equal_than":1}});
-  const sPosts = await alice.callSync('collections', 'get_list', { list_addr: listAddr, link_tag : "article" ,search: search_criterias})
-  console.log("allPosts",sPosts)
+  const sPosts = await alice.callSync('collections', 'get_list', { collection_addr: listAddr, link_tag : "article" ,search: search_criterias})
+  console.log("allPosts criterias",sPosts.Ok.items)
   t.equal(sPosts.Ok.items.length, 1, 'there should be 1 item in the post collection after search')
 })
   
