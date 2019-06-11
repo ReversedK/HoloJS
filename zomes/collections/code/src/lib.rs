@@ -292,12 +292,12 @@ fn evaluateIsOperator(operator:String,searchval:Value,e:Value)->bool{
     else if searchval.is_i64() { e.as_i64()>searchval.as_i64() }
     else if searchval.is_f64() { e.as_f64()>searchval.as_f64() }
     else {false}
-    }else if &operator=="more_or_equal_than"{
+    }else if &operator=="is_more_or_equal_than"{
     if searchval.is_u64() { e.as_u64()>=searchval.as_u64() }
     else if searchval.is_i64() { e.as_i64()>=searchval.as_i64() }
     else if searchval.is_f64() { e.as_f64()>=searchval.as_f64() }
     else {false}
-    } else if &operator=="less_or_equal_than"{
+    } else if &operator=="is_less_or_equal_than"{
     if searchval.is_u64() { e.as_u64()<=searchval.as_u64() }
     else if searchval.is_i64() { e.as_i64()<=searchval.as_i64() }
     else if searchval.is_f64() { e.as_f64()<=searchval.as_f64() }
