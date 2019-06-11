@@ -9,10 +9,10 @@ HoloJS is NOT a HDK for javascript it is merely a wrapper around some of the Rus
 HoloJs can  be considered as a data connector allowing JS app to use Holochain as a data persistence layer.
 
 HoloJS is composed of two pieces of software :
--   A Javascript mini framework    
+-   A NodeJS module    
 -   A Rust hApp     
 
-The hApp acts as an API for some of the functions of the Rust HDK. The JS framework streamlines the consumption of the API and makes it easy to integrate  Holochain to any JS project.
+The hApp acts as an API for some of the functions of the Rust HDK. The NodeJs library streamlines the consumption of the API and makes it easy to integrate  Holochain to any JS project.
 
 ## **Terminology**
 
@@ -23,7 +23,7 @@ Collections can be pictured as arrays of entries, like a “table” could be se
 Technically a collection is an entry that will be used as an anchor to link to other entries.  
 
 **Entries**
-HoloJSentries acts as storage containers for a JSON payload describing the object’s state. The mini framework makes it easy to create, read, update, delete or, link entries.
+HoloJSentries acts as storage containers for a JSON payload describing the object’s state. The NodeJs module makes it easy to create, read, update, delete or, link entries.
 
 **Logic**
 Logic happens outside the Rust app.providing more flexibility and ease to the devs
@@ -34,7 +34,7 @@ Logic happens outside the Rust app.providing more flexibility and ease to the de
 You can create, read, update, delete and link entries. A limited find function is also included.
   
 
-## **Documentation**
+## **Documentation (soon)**
 
 HoloJS (instance_name,instance_endpoint)
 
@@ -87,7 +87,7 @@ find
  
 ## The future :)  
 
-Implement type validation inside the mini framework (typescript?)
+Implement type validation inside the nodeJS lib (typescript?)
 React / angular ?
 add possibility to create private data (duplicate existing with different Sharing property?)
 
