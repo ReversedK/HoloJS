@@ -1,2 +1,2 @@
 run `npm install`.
-run tests by typing 'node tests.js'
+run tests by typing 'hc test'
