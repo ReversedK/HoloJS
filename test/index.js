@@ -98,7 +98,7 @@ scenario.runTape('Insert a post with tags, modify it and retrieve collections : 
   let search_criterias = JSON.stringify(
     {"or":{
       "name":{"does_not_contain":"Holo"},
-      "id":{"more_or_equal_than":2}
+      "id":{"is_more_or_equal_than":2}
   }});
   const sPosts = await alice.callSync('collections', 'get_list', { collection_addr: listAddr, link_tag : "article" ,search: search_criterias})
   console.log("allPosts criterias",sPosts.Ok.items)

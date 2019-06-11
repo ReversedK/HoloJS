@@ -171,47 +171,34 @@ returns : array of entries*
 
   
 
-Let post = new HoloJs(“posts”,config);
-
-Let tag = new HoloJs(“tag”,config);
-
-Await posts.setup() // creates the posts collection anchor
-
-Await tags.setup() // creates the tags collection anchor
-
-// the entry is inserted and automatically linked to the “posts” collection
-
-Const my1stPost = await post.add( { title : “My first post”, body : “Holochain”, timestamp : 155339196544 });
-
-Const my2ndPost = await post.add( { title : “My second post”, body : “Holochain”, timestamp : 155339196545 });
-
-// let’s tag the first post as “beautiful”
-
-// first create the tag
-
-Const beautiful = await tag.add({name:”beautiful”});
-
-// then link it bidir so that we can both find the tags for this post and the posts for this tag
-
-let r = await tag.link_bidirectional(my1stPost,beautiful, "tags","tags")
-
-// Find the tags for a post
-
-let post_tags = await post.findLinkedItems(my1stPost,"tags",{});
-
-// find the posts for a tag
-
-let tag_posts = await tag.findLinkedItems(beautiful,"tags",{});
-
-// find the posts for a tag with parameters
-
-let tag_post = await tag.findLinkedItems(beautiful,"tags",{
-
-“and”:{“title”:{“contains”:”first”}, “timestamp”:“is_less_than”:155339196545}} });
-
+    let post = new HoloJs(“posts”,config);    
+    let tag = new HoloJs(“tag”,config);    
+    await posts.setup() // creates the posts collection anchor    
+    await tags.setup() // creates the tags collection anchor    
+    
+    // the entry is inserted and automatically linked to the “posts” collection    
+    const my1stPost = await post.add( { title : “My first post”, body : “Holochain”, timestamp : 155339196544 });    
+    const my2ndPost = await post.add( { title : “My second post”, body : “Holochain”, timestamp : 155339196545 });
+    
+    // let’s tag the first post as “beautiful”    
+    // first create the tag    
+    Const beautiful = await tag.add({name:”beautiful”});
+        
+    // then link it bidir so that we can both find the tags for this post and the posts for this tag    
+    let r = await tag.link_bidirectional(my1stPost,beautiful, "tags","tags")
+    
+    // Find the tags for a post    
+    let post_tags = await post.findLinkedItems(my1stPost,"tags",{});
+    
+    // find the posts for a tag    
+    let tag_posts = await tag.findLinkedItems(beautiful,"tags",{});
+    
+    // find the posts for a tag with parameters    
+    let tag_post = await tag.findLinkedItems(beautiful,"tags",{    
+    “and”:{“title”:{“contains”:”first”}, “timestamp”:“is_less_than”:155339196545}} });
   
 
-## The future :)  
+## The future ? 
 
 Implement type validation inside the nodeJS lib (typescript?)
 
