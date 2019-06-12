@@ -87,7 +87,7 @@ to run the tests
 
   
 
-HoloJs(collection_name,config) : instantiates a HoloJs object
+**HoloJs**(collection_name,config) : instantiates a HoloJs object
 
     const config = {
     instance_name:"test-instance",

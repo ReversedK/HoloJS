@@ -1,9 +1,9 @@
 {
-  "name": "Holochain App Name",
-  "description": "A Holochain app",
+  "name": "HoloJs",
+  "description": "",
   "authors": [
     {
-      "indentifier": "Author Name <author@name.com>",
+      "indentifier": "Ludovic Désert <reversed.k@gmail.com>",
       "public_key_source": "",
       "signature": ""
     }
