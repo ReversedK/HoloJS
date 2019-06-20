@@ -1,0 +1,162 @@
+TAP version 13
+# Insert a post with tags, modify it and retrieve collections : by tag and whole collection of posts
+info: Test over, waiting for Waiter to flush...
+info: conductor pool size: 0
+info: using port
+info: Using config file at /tmp/hc-diorama-6xZDhJ/conductor-config.toml
+info: Using holochain binary at /media/revk/DATA/home/revk/.cargo/bin/holochain
+
+info: [32m[1mtest conductor spawned[22m[39m
+info: [C] Using config path: /tmp/hc-diorama-6xZDhJ/conductor-config.toml
+Unlocking agent keys:
+Successfully loaded 0 instance configurations
+Starting instances...
+Starting interfaces...
+
+info: [C] Done.
+Starting UI servers
+Starting all servers
+
+info: [32m[1mtest conductor connected to admin interface[22m[39m
+info: using port
+info: [C] Starting interface 'test-interface-43187'.
+
+info: [C] Added agent "alice"
+
+info: [C] Reading DNA from /media/revk/DATA/Dev/Workspaces/Holochain/orm/dist/orm.dna.json
+
+info: [C] Installed DNA from /media/revk/DATA/Dev/Workspaces/Holochain/orm/dist/orm.dna.json as "holojs-3"
+
+info: [C] Reading DNA from /tmp/hc-diorama-6xZDhJ/dna/Qmcu61jFJeoCc7QXm27mZbdGgxb4VoyXRp7FtRYL4Nd4VY.dna.json
+
+info: [C] Failed to load instance alice-3 from storage: ErrorGeneric("State could not be loaded due to NoneError")
+Initializing new chain...
+
+error: !C! WARNING! The git-hash of the runtime and the zome don't match.
+Runtime hash: e265422f8b7dbcb76357dc7769d2eb43b3224c12
+Zome hash: 1a2a82efbacb667c5848eb94ebc7bf0258c96148
+
+info: [C] Stopping interface test-interface-43187
+Starting interface 'test-interface-43187'.
+
+info: [C] Added agent "bob"
+
+info: [C] Reading DNA from /tmp/hc-diorama-6xZDhJ/dna/Qmcu61jFJeoCc7QXm27mZbdGgxb4VoyXRp7FtRYL4Nd4VY.dna.json
+
+info: [C] Failed to load instance bob-3 from storage: ErrorGeneric("State could not be loaded due to NoneError")
+Initializing new chain...
+
+error: !C! WARNING! The git-hash of the runtime and the zome don't match.
+Runtime hash: e265422f8b7dbcb76357dc7769d2eb43b3224c12
+Zome hash: 1a2a82efbacb667c5848eb94ebc7bf0258c96148
+
+info: [C] Stopping interface test-interface-43187
+Starting interface 'test-interface-43187'.
+
+info: [C] Added agent "carol"
+
+info: [C] Reading DNA from /tmp/hc-diorama-6xZDhJ/dna/Qmcu61jFJeoCc7QXm27mZbdGgxb4VoyXRp7FtRYL4Nd4VY.dna.json
+
+info: [C] Failed to load instance carol-3 from storage: ErrorGeneric("State could not be loaded due to NoneError")
+Initializing new chain...
+
+error: !C! WARNING! The git-hash of the runtime and the zome don't match.
+Runtime hash: e265422f8b7dbcb76357dc7769d2eb43b3224c12
+Zome hash: 1a2a82efbacb667c5848eb94ebc7bf0258c96148
+
+info: [C] Stopping interface test-interface-43187
+
+info: [C] Starting interface 'test-interface-43187'.
+
+info: [C] Added bridge from 'alice-3' to 'bob-3' as 'test-bridge'
+
+info: [C] Starting instance "alice-3"...
+
+info: [C] Starting instance "bob-3"...
+
+info: [C] Starting instance "carol-3"...
+
+ok 1 can create a collection
+info: [C] 2019-06-20 15:27:02 ThreadId(1):[33malice-3[0m: [31merr/nucleus/run_dna: Zome function failure: Argument deserialization failed, when calling: CallbackFnCall { id: ProcessUniqueId { prefix: 59, offset: 8 }, zome_name: "collections", fn_name: "__hdk_validate_link", parameters: JsonString("{\"entry_type\":\"collection\",\"link\":{\"base\":\"QmcUJkskXfriPU8p6jU9TzdN31qyc1yUDXNLcgwjRWGrt9\",\"target\":\"QmY1QaMqs7EtZ7GyQsfQTno8tAxiPvV9S5DmEgEeM5qrYa\",\"link_type\":\"items\",\"tag\":\"article\"},\"direction\":\"To\",\"validation_data\":{\"LinkAdd\":{\"link\":{\"action_kind\":\"ADD\",\"link\":{\"base\":\"QmcUJkskXfriPU8p6jU9TzdN31qyc1yUDXNLcgwjRWGrt9\",\"target\":\"QmY1QaMqs7EtZ7GyQsfQTno8tAxiPvV9S5DmEgEeM5qrYa\",\"link_type\":\"items\",\"tag\":\"article\"}},\"validation_data\":{\"package\":{\"chain_header\":{\"entry_type\":\"LinkAdd\",\"entry_address\":\"QmNdaonadPNDrxgNRbAukgisuary9CaD7bLiAo3hWPN9hw\",\"provenances\":[[\"HcScjwO9ji9633ZYxa6IYubHJHW6ctfoufv5eq4F7ZOxay8wR76FP4xeG9pY3ui\",\"BPEIR61tUFPsNANGHCmsfCET6Jt3RnmboqBeNvuy37e5MBL84Hd6bSSsEJe4UgmpLvIaxrmjEoJS+ELXFtBaDA==\"]],\"link\":\"QmSgzzx3W5qP8u131E1JSW1JBarJpsUkjckrfdSVpLwxMx\",\"link_same_type\":null,\"link_update_delete\":null,\"timestamp\":\"2019-06-20T13:27:02+00:00\"},\"source_chain_entries\":null,\"source_chain_headers\":null,\"custom\":null},\"lifecycle\":\"Chain\"}}}}") }[0m
+
+info: [C] 2019-06-20 15:27:02 ThreadId(1):[33malice-3[0m: [31merr/nucleus/run_dna: Zome function failure: Argument deserialization failed, when calling: CallbackFnCall { id: ProcessUniqueId { prefix: 79, offset: 8 }, zome_name: "collections", fn_name: "__hdk_validate_link", parameters: JsonString("{\"entry_type\":\"collection\",\"link\":{\"base\":\"QmcUJkskXfriPU8p6jU9TzdN31qyc1yUDXNLcgwjRWGrt9\",\"target\":\"QmZkuUbmP8GC7FiBeJX9CJ5bg6GYrg5cbb9Bj6Bcq49eXB\",\"link_type\":\"items\",\"tag\":\"article\"},\"direction\":\"To\",\"validation_data\":{\"LinkAdd\":{\"link\":{\"action_kind\":\"ADD\",\"link\":{\"base\":\"QmcUJkskXfriPU8p6jU9TzdN31qyc1yUDXNLcgwjRWGrt9\",\"target\":\"QmZkuUbmP8GC7FiBeJX9CJ5bg6GYrg5cbb9Bj6Bcq49eXB\",\"link_type\":\"items\",\"tag\":\"article\"}},\"validation_data\":{\"package\":{\"chain_header\":{\"entry_type\":\"LinkAdd\",\"entry_address\":\"QmWY2Zf4vUdp6MJWbjm7Gu4dGQfL46BcNAhdC2jzRJ7wfy\",\"provenances\":[[\"HcScjwO9ji9633ZYxa6IYubHJHW6ctfoufv5eq4F7ZOxay8wR76FP4xeG9pY3ui\",\"7tAx4/0IRsoXD5fQ0/r3A1Jw1a4Soc3xcX8BTv8uf63/wamWjOXMSWnQuML8dV+5yD/aZP0iMxj40/H9/2GQBg==\"]],\"link\":\"QmW5y1UHEkeH1qHWnciXzmncxrboyJf2gh9S4hvKHTo3KQ\",\"link_same_type\":null,\"link_update_delete\":null,\"timestamp\":\"2019-06-20T13:27:02+00:00\"},\"source_chain_entries\":null,\"source_chain_headers\":null,\"custom\":null},\"lifecycle\":\"Chain\"}}}}") }[0m
+
+info: [C] 2019-06-20 15:27:02 ThreadId(1):[33malice-3[0m: [31merr/nucleus/run_dna: Zome function failure: Argument deserialization failed, when calling: CallbackFnCall { id: ProcessUniqueId { prefix: 100, offset: 8 }, zome_name: "collections", fn_name: "__hdk_validate_link", parameters: JsonString("{\"entry_type\":\"collection\",\"link\":{\"base\":\"QmcUJkskXfriPU8p6jU9TzdN31qyc1yUDXNLcgwjRWGrt9\",\"target\":\"QmNWdNxyBLp79rQganvAhagXY3zApNKg5NGfkQUhZin6KP\",\"link_type\":\"items\",\"tag\":\"tag\"},\"direction\":\"To\",\"validation_data\":{\"LinkAdd\":{\"link\":{\"action_kind\":\"ADD\",\"link\":{\"base\":\"QmcUJkskXfriPU8p6jU9TzdN31qyc1yUDXNLcgwjRWGrt9\",\"target\":\"QmNWdNxyBLp79rQganvAhagXY3zApNKg5NGfkQUhZin6KP\",\"link_type\":\"items\",\"tag\":\"tag\"}},\"validation_data\":{\"package\":{\"chain_header\":{\"entry_type\":\"LinkAdd\",\"entry_address\":\"QmScXtvMk1xg8QjgGLESrjMcDE8M1WJEvonVmMdwruYd6B\",\"provenances\":[[\"HcScjwO9ji9633ZYxa6IYubHJHW6ctfoufv5eq4F7ZOxay8wR76FP4xeG9pY3ui\",\"Xe4Zt0rKUlTorn2FO96qRq0CtIpxj/iNrGjW77z1HrJgMwphodujOBw+KWKVIqzyPBncLpNJjJaVolmXOconAw==\"]],\"link\":\"QmUcSLyrmuiNC82wXDcVyo9siJutbrskBGzrMk4HSQY2h6\",\"link_same_type\":null,\"link_update_delete\":null,\"timestamp\":\"2019-06-20T13:27:02+00:00\"},\"source_chain_entries\":null,\"source_chain_headers\":null,\"custom\":null},\"lifecycle\":\"Chain\"}}}}") }[0m
+
+info: [C] 2019-06-20 15:27:02 ThreadId(1):[33malice-3[0m: [31merr/nucleus/run_dna: Zome function failure: Argument deserialization failed, when calling: CallbackFnCall { id: ProcessUniqueId { prefix: 113, offset: 8 }, zome_name: "collections", fn_name: "__hdk_validate_link", parameters: JsonString("{\"entry_type\":\"collection\",\"link\":{\"base\":\"QmcUJkskXfriPU8p6jU9TzdN31qyc1yUDXNLcgwjRWGrt9\",\"target\":\"QmNLyMGt5R46J71tUvkK2aA1vQvFoJwqUQMYy189uQg1Qd\",\"link_type\":\"items\",\"tag\":\"tag\"},\"direction\":\"To\",\"validation_data\":{\"LinkAdd\":{\"link\":{\"action_kind\":\"ADD\",\"link\":{\"base\":\"QmcUJkskXfriPU8p6jU9TzdN31qyc1yUDXNLcgwjRWGrt9\",\"target\":\"QmNLyMGt5R46J71tUvkK2aA1vQvFoJwqUQMYy189uQg1Qd\",\"link_type\":\"items\",\"tag\":\"tag\"}},\"validation_data\":{\"package\":{\"chain_header\":{\"entry_type\":\"LinkAdd\",\"entry_address\":\"QmXgF1CKvzRTJsEv1cJ72qrsz6JrXxeq9akkfPKubLwRbp\",\"provenances\":[[\"HcScjwO9ji9633ZYxa6IYubHJHW6ctfoufv5eq4F7ZOxay8wR76FP4xeG9pY3ui\",\"M0x7sASikcVcG8dcCmdcZNsXeJdyrPBJO58KqmSFDEiTw+NhG8OoEoqm2PRFUS9xVvQ/kMq+JEAeqaGf7NFUAw==\"]],\"link\":\"QmPtefLmiZ84FQ8mEB6G3A58mEaMT5pQwieq5ePGSdBUYd\",\"link_same_type\":null,\"link_update_delete\":null,\"timestamp\":\"2019-06-20T13:27:02+00:00\"},\"source_chain_entries\":null,\"source_chain_headers\":null,\"custom\":null},\"lifecycle\":\"Chain\"}}}}") }[0m
+
+{ Err: 
+   { Internal: '{"kind":{"ErrorGeneric":"Zome function failure: Argument deserialization failed"},"file":"/media/revk/DATA/home/revk/.cargo/git/checkouts/holochain-rust-c3b6365fc5bfa642/e265422/core/src/nucleus/ribosome/runtime.rs","line":"192"}' } }
+not ok 2 can create an entry
+  ---
+    operator: notEqual
+    expected: undefined
+    actual:   undefined
+    at: scenario (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/tests.js:79:5)
+    stack: |-
+      Error: can create an entry
+          at Test.assert [as _assert] (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:226:54)
+          at Test.bound [as _assert] (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:77:32)
+          at Test.notEqual (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:403:10)
+          at Test.bound [as notEqual] (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:77:32)
+          at scenario (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/tests.js:79:5)
+          at <anonymous>
+          at process._tickCallback (internal/process/next_tick.js:189:7)
+  ...
+not ok 3 Bidir link sould return true
+  ---
+    operator: equal
+    expected: true
+    actual:   undefined
+    at: scenario (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/tests.js:102:5)
+    stack: |-
+      Error: Bidir link sould return true
+          at Test.assert [as _assert] (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:226:54)
+          at Test.bound [as _assert] (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:77:32)
+          at Test.equal (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:386:10)
+          at Test.bound [as equal] (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:77:32)
+          at scenario (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/tests.js:102:5)
+          at <anonymous>
+          at process._tickCallback (internal/process/next_tick.js:189:7)
+  ...
+not ok 4 should not be equal
+  ---
+    operator: notEqual
+    expected: undefined
+    actual:   undefined
+    at: scenario (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/tests.js:109:5)
+    stack: |-
+      Error: should not be equal
+          at Test.assert [as _assert] (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:226:54)
+          at Test.bound [as _assert] (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:77:32)
+          at Test.notEqual (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:403:10)
+          at Test.bound [as notEqual] (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:77:32)
+          at scenario (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/tests.js:109:5)
+          at <anonymous>
+          at process._tickCallback (internal/process/next_tick.js:189:7)
+  ...
+error: Test failed while running: {}
+not ok 5 TypeError: Cannot read property 'items' of undefined at scenario (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/tests.js:118:27) at <anonymous> at process._tickCallback (internal/process/next_tick.js:189:7)
+  ---
+    operator: fail
+    at: run.catch (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/@holochain/diorama/lib/executors.js:18:19)
+    stack: |-
+      Error: TypeError: Cannot read property 'items' of undefined
+          at scenario (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/tests.js:118:27)
+          at <anonymous>
+          at process._tickCallback (internal/process/next_tick.js:189:7)
+          at Test.assert [as _assert] (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:226:54)
+          at Test.bound [as _assert] (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:77:32)
+          at Test.fail (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:319:10)
+          at Test.bound [as fail] (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/tape/lib/test.js:77:32)
+          at run.catch (/media/revk/DATA/Dev/Workspaces/Holochain/orm/test/node_modules/@holochain/diorama/lib/executors.js:18:19)
+          at <anonymous>
+          at process._tickCallback (internal/process/next_tick.js:189:7)
+  ...
+info: conductor exited with code null
+
+1..5
+# tests 5
+# pass  1
+# fail  4
+

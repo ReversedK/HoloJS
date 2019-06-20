@@ -11,6 +11,7 @@ use hdk::utils;
 use hdk::{
     error::ZomeApiResult,
     holochain_core_types::{
+        link::LinkMatch,
         hash::HashString,
         error::HolochainError,
         dna::entry_types::Sharing,
@@ -121,6 +122,13 @@ define_zome! {
     }
 }     
 
+
+/******************************************* */
+/******** STRUCTURE DECLARATIONS     ******* */
+/******************************************* */
+
+
+
 #[derive(Serialize, Deserialize, Debug, Clone, DefaultJson)]
 struct Collection {
     name: String
@@ -213,7 +221,7 @@ fn handle_get_list(collection_addr: HashString,link_tag: String,search:JsonStrin
     let collection = hdk::utils::get_as_type::<Collection>(collection_addr.clone())?;
    
     // try and load the collection items, filter out errors and collect in a vector
-    let holojs_items : Vec<GetHoloJsEntry>  = hdk::get_links(&collection_addr, Some("items".into()),Some(link_tag.clone().into()))?.addresses()
+    let holojs_items : Vec<GetHoloJsEntry>  = hdk::get_links(&collection_addr, LinkMatch::Exactly("items"),LinkMatch::Exactly(&link_tag))?.addresses()
         .iter()
         .map(|item_address|-> ZomeApiResult<GetHoloJsEntry>  {            
            let the_entry = hdk::utils::get_as_type::<HoloJsEntry>(item_address.to_owned())?;
@@ -239,7 +247,7 @@ fn handle_get_linked_items(item_addr: HashString,link_tag: String,search:JsonStr
     let base_item = hdk::utils::get_as_type::<HoloJsEntry>(item_addr.clone())?;
    
     // try and load the  items linked to base_item, filter out errors and collect in a vector
-    let holojs_items = hdk::get_links(&item_addr, Some("items".into()),Some(link_tag.clone().into()))?.addresses()
+    let holojs_items = hdk::get_links(&item_addr, LinkMatch::Exactly("items"),LinkMatch::Exactly(&link_tag))?.addresses()
         .iter()
         .map(|item_address|-> ZomeApiResult<GetHoloJsEntry>  {            
            let the_entry = hdk::utils::get_as_type::<HoloJsEntry>(item_address.to_owned())?;
