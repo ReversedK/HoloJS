@@ -4,7 +4,7 @@
 # HoloJS 
 tested with Holochain version 0.0.20-alpha3
 
-WARNING : for some reason the new tests using Diorama are failing. When using the Holochain conductor everything works as it's supposed to be.  
+WARNING : for some reason the new tests using Diorama are failing. When using the Holochain conductor everything works as it's supposed to.  
   
 
 ## **What is it ?**
@@ -141,9 +141,9 @@ returns : boolean*
  **search_params** : JSON object*
  
  The search params object must be structured as follows :
-{ **query mode (and/or)** : { **field_name**  : { **operator** : **value** }}
-for example : `{"and":{"title":{"contains":"first"},id:{"less_than":10}}`
-would return the entries with a  title  containing the string "first" with an id inferiror to 10.
+{ **query mode (and/or)** : { **field_name**  : { **operator** : **array of values** }}
+for example : `{"and":{"title":{"contains":["first","step"]},id:{"less_than":[10]}}`
+would return the entries with a  title  containing the strings "first" and "step" with an id inferior to 10. Note that even if the condition has a unique value you have to encapsulate it in an array
 
 
 | Operation | Operator |

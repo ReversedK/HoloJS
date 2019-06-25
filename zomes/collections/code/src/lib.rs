@@ -333,8 +333,10 @@ fn search_something(_search:JsonString,_item:&GetHoloJsEntry)->bool {
         let search_object = search_object_json.as_object().unwrap();
          for (field, search_object_json_1) in search_object.iter() {
             let search_object2 = search_object_json_1.as_object().unwrap();
-            for (key2, searchvalue) in search_object2.iter() {
-            // not an array of condition, just one
+            for (key2, search_object_json_3) in search_object2.iter() {
+                let conditionArray = search_object_json_3.as_array().unwrap();
+                for (searchvalue) in conditionArray.iter() {
+            //  must always be an array of conditions
             let estimation: Result<bool,String> = match key2.as_str() {        
             "contains" => Ok(e[&field].as_str().unwrap().contains(searchvalue.as_str().unwrap())),
             "does_not_contain" => Ok(!e[&field].as_str().unwrap().contains(searchvalue.as_str().unwrap())),       
@@ -348,6 +350,7 @@ fn search_something(_search:JsonString,_item:&GetHoloJsEntry)->bool {
                         res=estimation.ok().unwrap(); 
                     }
                 }
+            }
             }
          }
     }

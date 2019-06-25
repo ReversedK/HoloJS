@@ -39,7 +39,7 @@ setTimeout(async()=>{
    console.log('update:',p)  
    let f = await post.delete(post_addr)  
    console.log('delete:',f) 
-   let re = await post.find({"and":{"title":{"contains":"yo"}}})
+   let re = await post.find({"and":{"title":{"contains":["yo"]}}})
    console.log("find:",re)
 },500)
  }

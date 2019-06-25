@@ -1,8 +1,5 @@
 {
   "dependencies": {
-    "@holochain/holochain-nodejs": "0.4.16-alpha2",
-    "json3": "*",
-    "superagent": "^5.0.6",
-    "tape": "^4.9.1"
+    "superagent": "^5.0.6"   
   }
 }
