@@ -197,7 +197,7 @@ returns : array of entries*
     
     // find the posts for a tag with parameters    
     let tag_post = await tag.findLinkedItems(beautiful,"tags",{    
-    “and”:{“title”:{“contains”:”first”}, “timestamp”:“is_less_than”:155339196545}} });
+    “and”:{“title”:{“contains”:[”first”]}, “timestamp”:“is_less_than”:[155339196545]}} });
   
 
 ## The future ? 
