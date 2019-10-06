@@ -2,7 +2,7 @@
   name = "collections"
   version = "0.1.1"
   authors = ["Ludovic Desert <ludovic@4goa.net>"]
-  edition = "2019"
+  edition = "2018"
 [dependencies]
   serde = "=1.0.89"
   serde_json = { version = "=1.0.39", features = ["preserve_order"] }
