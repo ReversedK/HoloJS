@@ -2,7 +2,7 @@
   
 
 # HoloJS 
-tested with Holochain version 0.0.20-alpha3
+tested with Holochain version 0.0.31-alpha1
 
 WARNING : for some reason the new tests using Diorama are failing. When using the Holochain conductor everything works as it's supposed to.  
   
