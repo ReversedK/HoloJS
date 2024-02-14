@@ -2,9 +2,9 @@
   
 
 # HoloJS 
-tested with Holochain version 0.0.31-alpha1
+Tested with Holochain version 0.0.31-alpha1
 
-WARNING : for some reason the new tests using Diorama are failing. When using the Holochain conductor everything works as it's supposed to.  
+**WARNING** : for some reason the new tests using Diorama are failing. When using the Holochain conductor everything works as it's supposed to.  
   
 
 ## **What is it ?**
@@ -63,7 +63,8 @@ Logic happens outside the Rust app.providing more flexibility and ease to the de
 
   
 
-You can create, read, update, delete and link entries. A limited find function is also included.
+You can create, read, update, delete and link entries. 
+A limited find function is also included.
 
   
 
